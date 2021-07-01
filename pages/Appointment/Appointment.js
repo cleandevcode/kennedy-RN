@@ -6,51 +6,56 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import AddImg from "../../assets/add.png";
-import moment from 'moment';
+import moment from "moment";
 
-const randomColors = ["#03cec23d", "#ce03c63d", "#bdff003d"]
+const randomColors = ["#03cec23d", "#ce03c63d", "#bdff003d"];
 
 export default function Appointment({ show, handleShowModal }) {
   const [items, setItems] = useState([]);
-    const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(()=> {
-      if(!show)
-        fetchAppointments();
-  }, [])
+  useEffect(() => {
+    if (!show) fetchAppointments();
+  }, [show]);
 
   const fetchAppointments = () => {
     setLoading(true);
-    const url = `${process.env.REACT_APP_ENDPOINT}/users`;
-    fetch(url).then(res=>res.json()).then(res=>{
-        console.log('res>>>>', res)
-        if(res) {
-            setItems(res);
+    // const url = `${process.env.REACT_APP_ENDPOINT}/users`;
+    const url = "http://205c589b890d.ngrok.io/users";
+    fetch(url)
+      .then((res) => res.json())
+      .then((res) => {
+        if (res) {
+          setItems(res);
         }
-    }).catch(err=>console.log(err))
-    .finally(()=>{
-        setLoading(false)
-    })
-  }
+      })
+      .catch((err) => console.log(err))
+      .finally(() => {
+        setLoading(false);
+      });
+  };
 
   const generateRandomColor = (index) => {
-    return randomColors[index]
-  }
+    return randomColors[index];
+  };
 
   const formatDate = (date) => {
-      const format = "DD/MM/YYYY hh:mm a";
-      return moment(date).format(format).toString()
-  }
+    const format = "DD/MM/YYYY hh:mm a";
+    return moment(date).format(format).toString();
+  };
 
   const renderItem = (row) => {
     const { item, index } = row;
     return (
       <TouchableOpacity
         key={index}
-        style={[{ backgroundColor: generateRandomColor(index % 3) }, styles.cardContainer]}
+        style={[
+          { backgroundColor: generateRandomColor(index % 3) },
+          styles.cardContainer,
+        ]}
       >
         <View style={[styles.flexContainer, styles.spaceBetweenContent]}>
           <View style={[{ display: "flex" }, styles.spaceBetweenContent]}>
@@ -93,18 +98,16 @@ export default function Appointment({ show, handleShowModal }) {
           </Text>
         </TouchableOpacity>
       </View>
-      {loading &&
-        <ActivityIndicator size="large" />
-      }
-      {!loading &&
+      {loading && <ActivityIndicator size="large" />}
+      {!loading && (
         <FlatList
-            data={items}
-            extraData={items}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id}
-            style={styles.w100}
+          data={items}
+          extraData={items}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          style={styles.w100}
         />
-      }
+      )}
     </View>
   );
 }
@@ -119,19 +122,19 @@ const styles = StyleSheet.create({
   },
   fongSize24: {
     fontSize: 24,
-    fontFamily: 'Poppins_400Regular'
+    fontFamily: "Poppins_400Regular",
   },
   fontSize14: {
     fontSize: 14,
-    fontFamily: 'Poppins_400Regular'
+    fontFamily: "Poppins_400Regular",
   },
   fontSize16: {
     fontSize: 16,
-    fontFamily: 'Poppins_400Regular'
+    fontFamily: "Poppins_400Regular",
   },
   fontSize18: {
     fontSize: 18,
-    fontFamily: 'Poppins_400Regular'
+    fontFamily: "Poppins_400Regular",
   },
   flexContainer: {
     display: "flex",

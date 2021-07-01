@@ -19,7 +19,7 @@ export default function AppointmentModal({ show, handleShow }) {
     date: new Date(),
   });
   const [dateString, setDateString] = useState("");
-  
+
   useEffect(() => {
     setDateString(convertDateToString(state.date));
   }, [state]);
@@ -46,28 +46,32 @@ export default function AppointmentModal({ show, handleShow }) {
   };
 
   const saveAppointment = () => {
-    if(state.name === "" || state.reason === "") {
-      return
+    if (state.name === "" || state.reason === "") {
+      return;
     }
-    const url = `${process.env.REACT_APP_ENDPOINT}/users`;
+    // const url = `${process.env.REACT_APP_ENDPOINT}/users`;\
+    const url = "http://205c589b890d.ngrok.io/users";
 
-    let request = {
-      "fullName": state.name,
-      "reason": state.reason,
-      "dateTime": state.date
-    }
-    
-    fetch(url, {
-      method: 'POST',
-      body: JSON.stringify(request)
-    }).then(res=>{
-      if(res) {
-        handleShow()
-      }
-    }).catch(err=>{
-      console.log(err)
-    })
-  }
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fullName: state.name,
+        reason: state.reason,
+        dateTime: state.date,
+      }),
+    };
+
+    fetch(url, requestOptions)
+      .then((res) => {
+        if (res) {
+          handleShow();
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <Modal isVisible={show} style={styles.modal}>
@@ -145,10 +149,29 @@ export default function AppointmentModal({ show, handleShow }) {
             style={[styles.cancel, styles.button]}
             onPress={handleShow}
           >
-            <Text style={{ color: "black", fontSize: 16, fontFamily: 'Poppins_400Regular' }}>Cancel</Text>
+            <Text
+              style={{
+                color: "black",
+                fontSize: 16,
+                fontFamily: "Poppins_400Regular",
+              }}
+            >
+              Cancel
+            </Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.save, styles.button]} onPress={saveAppointment}>
-            <Text style={{ color: "white", fontSize: 16, fontFamily: 'Poppins_400Regular' }}>Save</Text>
+          <TouchableOpacity
+            style={[styles.save, styles.button]}
+            onPress={saveAppointment}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: 16,
+                fontFamily: "Poppins_400Regular",
+              }}
+            >
+              Save
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -173,14 +196,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    fontFamily: 'Poppins_400Regular'
+    fontFamily: "Poppins_400Regular",
   },
   fontSize16: {
     fontSize: 16,
-    fontFamily: 'Poppins_400Regular'
+    fontFamily: "Poppins_400Regular",
   },
   fontSize14: {
-    fontFamily: 'Poppins_400Regular',
+    fontFamily: "Poppins_400Regular",
     fontSize: 14,
   },
   fontBold: {
