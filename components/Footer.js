@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingRight: 20,
     height: 50,
+    fontFamily: 'Poppins_400Regular'
   },
   micContainer: {
     width: 70,

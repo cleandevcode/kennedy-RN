@@ -7,42 +7,19 @@ import Sidebar from "./components/Sidebar";
 import Appointment from "./pages/Appointment/Appointment";
 import Footer from "./components/Footer";
 import AppointmentModal from "./pages/Appointment/AppointmentModal";
-// import Modal from 'react-native-modal'
-
-// export default function App() {
-//   const [fontsLoaded] = useFonts({ Poppins_400Regular });
-//   const [isModalVisible, setModalVisible] = useState(false);
-
-//   const toggleModal = () => {
-//     setModalVisible(!isModalVisible);
-//   };
-
-//   if (!fontsLoaded) {
-//     return <AppLoading />
-//   }
-
-//   return (
-//     <View style={{flex: 1, fontFamily: 'Poppins_400Regular'}}>
-//       <Button title="Show modal" onPress={toggleModal} />
-
-//       <Modal isVisible={isModalVisible}>
-//         <View style={{flex: 1}}>
-//           <Text>Hello!</Text>
-//           <Button title="Hide modal" onPress={toggleModal} />
-//         </View>
-//       </Modal>
-//     </View>
-//   );
-// }
 
 export default function App() {
+  const [fontsLoaded] = useFonts({ Poppins_400Regular });
+
   const [show, setShow] = useState(false);
 
   const handleShow = () => {
     setShow(!show);
   };
 
-  console.log(">>>>>", show);
+  if (!fontsLoaded) {
+    return <AppLoading />
+  }
 
   return (
     <>
@@ -52,18 +29,13 @@ export default function App() {
         </View>
         <View style={styles.mainContainer}>
           <View style={styles.content}>
-            <Appointment handleShowModal={handleShow} />
+            <Appointment show={show} handleShowModal={handleShow} />
           </View>
           <View style={styles.inputContent}>
             <Footer />
           </View>
         </View>
       </View>
-      {/* <Modal show={false}>
-        <View
-          style={{ height: 100, width: 100, backgroundColor: "red" }}
-        ></View>
-      </Modal> */}
       {show && <AppointmentModal show={show} handleShow={handleShow} />}
     </>
   );

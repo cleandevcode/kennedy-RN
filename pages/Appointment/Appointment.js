@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -6,60 +6,62 @@ import {
   Image,
   FlatList,
   TouchableOpacity,
+  ActivityIndicator
 } from "react-native";
 import AddImg from "../../assets/add.png";
+import moment from 'moment';
 
-const lists = [
-  {
-    id: 1,
-    name: "Rober Palimer",
-    reason: "Additional Details are added here",
-    time: "10:00 AM",
-    bgColor: "#03cec23d",
-  },
-  {
-    id: 2,
-    name: "Rober Palimer",
-    reason: "Additional Details are added here",
-    time: "10:00 AM",
-    bgColor: "#ce03c63d",
-  },
-  {
-    id: 3,
-    name: "Rober Palimer",
-    reason: "Additional Details are added here",
-    time: "10:00 AM",
-    bgColor: "#03cec23d",
-  },
-  {
-    id: 4,
-    name: "Rober Palimer",
-    reason: "Additional Details are added here",
-    time: "10:00 AM",
-    bgColor: "#bdff003d",
-  },
-];
+const randomColors = ["#03cec23d", "#ce03c63d", "#bdff003d"]
 
-export default function Appointment({ handleShowModal }) {
+export default function Appointment({ show, handleShowModal }) {
   const [items, setItems] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+  useEffect(()=> {
+      if(!show)
+        fetchAppointments();
+  }, [])
+
+  const fetchAppointments = () => {
+    setLoading(true);
+    const url = `${process.env.REACT_APP_ENDPOINT}/users`;
+    fetch(url).then(res=>res.json()).then(res=>{
+        console.log('res>>>>', res)
+        if(res) {
+            setItems(res);
+        }
+    }).catch(err=>console.log(err))
+    .finally(()=>{
+        setLoading(false)
+    })
+  }
+
+  const generateRandomColor = (index) => {
+    return randomColors[index]
+  }
+
+  const formatDate = (date) => {
+      const format = "DD/MM/YYYY hh:mm a";
+      return moment(date).format(format).toString()
+  }
 
   const renderItem = (row) => {
     const { item, index } = row;
     return (
       <TouchableOpacity
         key={index}
-        style={[{ backgroundColor: item.bgColor }, styles.cardContainer]}
+        style={[{ backgroundColor: generateRandomColor(index % 3) }, styles.cardContainer]}
       >
         <View style={[styles.flexContainer, styles.spaceBetweenContent]}>
           <View style={[{ display: "flex" }, styles.spaceBetweenContent]}>
             <Text
               style={[styles.fontBold, styles.fontSize16, { marginBottom: 10 }]}
             >
-              {item.name}
+              {item.fullName}
             </Text>
             <Text style={styles.fontSize14}>{item.reason}</Text>
           </View>
-          <Text style={styles.fontSize14}>{item.time}</Text>
+          <Text style={styles.fontSize14}>{formatDate(item.dateTime)}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -91,13 +93,18 @@ export default function Appointment({ handleShowModal }) {
           </Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={lists}
-        extraData={items}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        style={styles.w100}
-      />
+      {loading &&
+        <ActivityIndicator size="large" />
+      }
+      {!loading &&
+        <FlatList
+            data={items}
+            extraData={items}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+            style={styles.w100}
+        />
+      }
     </View>
   );
 }
@@ -112,15 +119,19 @@ const styles = StyleSheet.create({
   },
   fongSize24: {
     fontSize: 24,
+    fontFamily: 'Poppins_400Regular'
   },
   fontSize14: {
     fontSize: 14,
+    fontFamily: 'Poppins_400Regular'
   },
   fontSize16: {
     fontSize: 16,
+    fontFamily: 'Poppins_400Regular'
   },
   fontSize18: {
     fontSize: 18,
+    fontFamily: 'Poppins_400Regular'
   },
   flexContainer: {
     display: "flex",
@@ -131,8 +142,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   addImg: {
-    width: 15,
-    height: 15,
+    width: 18,
+    height: 18,
   },
   w100: {
     width: "100%",

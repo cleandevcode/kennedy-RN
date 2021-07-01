@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "white",
     marginBottom: 30,
+    fontFamily: 'Poppins_400Regular'
   },
   card: {
     backgroundColor: "#082671",
@@ -109,9 +110,11 @@ const styles = StyleSheet.create({
   character: {
     color: "white",
     fontSize: 14,
+    fontFamily: 'Poppins_400Regular'
   },
   whiteText: {
     color: "white",
     fontSize: 16,
+    fontFamily: 'Poppins_400Regular'
   },
 });
