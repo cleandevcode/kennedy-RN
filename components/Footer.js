@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,19 +6,40 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
+import * as Permissions from 'expo-permissions';
+import { usePermissions } from 'expo-permissions';
 import MicImg from "../assets/mic.png";
+import ListeningImg from "../assets/listening.png";
 
 export default function Footer() {
+  const [ permission, askForPermission ] = usePermissions(Permissions.AUDIO_RECORDING, {ask: true})
+  const [listening, setListening] = useState(false);
+
+  const handlePressListening = () => {
+    if(!permission || permission.status !== 'granted') {
+      askForPermission()
+    }
+    setListening(!listening);
+  }
+
+  const placeholder =  listening ? "Listening" : "Tap the mic to begin"
+
+  
+
   return (
     <View style={styles.container}>
       <View>
         <TextInput
-          placeholder="Tap the mic to begin"
+          placeholder={placeholder}
           style={styles.textInput}
         />
       </View>
-      <TouchableOpacity style={styles.micContainer}>
-        <Image source={MicImg} style={styles.mic} />
+      <TouchableOpacity style={[styles.micContainer, {backgroundColor: listening ? 'unset' : '#00164E'}]} onPress={handlePressListening}>
+        {listening ? 
+          <Image source={ListeningImg} style={styles.listening} />
+          : 
+          <Image source={MicImg} style={styles.mic} />
+        }
       </TouchableOpacity>
     </View>
   );
@@ -45,7 +66,6 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
-    backgroundColor: "#00164E",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -54,4 +74,8 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
+  listening: {
+    width: 70,
+    height: 70
+  }
 });

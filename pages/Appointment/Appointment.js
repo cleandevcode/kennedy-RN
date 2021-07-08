@@ -13,13 +13,47 @@ import moment from "moment";
 
 const randomColors = ["#03cec23d", "#ce03c63d", "#bdff003d"];
 
+const lists = [
+  {
+    name: "John, Benjamin",
+    service: "Cardiology",
+    urgency: "Urgent",
+    note: "Previous report of Heart valve disease",
+    time: "10:00 AM",
+    bgColor: "#03CEC23D",
+  },
+  {
+    name: "Mayers, Stephan",
+    service: "Cardiology",
+    urgency: "Non-Urgent",
+    note: "Pain in the neck, jaw, throat, upper abdomen or back",
+    time: "11:00 AM",
+    bgColor: "#CE03C63D",
+  },
+  {
+    name: "Kosla, Debra",
+    service: "Cardiology",
+    urgency: "Non-Urgent",
+    note: "Patient reported Lightheadedness",
+    time: "12:30 AM",
+    bgColor: "#03CEC23D",
+  },
+];
+
 export default function Appointment({ show, handleShowModal }) {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (!show) fetchAppointments();
-  }, [show]);
+  // useEffect(() => {
+  //   if (!show) fetchAppointments();
+  // }, [show]);
+
+  useEffect(()=>{
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  }, [])
 
   const fetchAppointments = () => {
     setLoading(true);
@@ -62,11 +96,12 @@ export default function Appointment({ show, handleShowModal }) {
             <Text
               style={[styles.fontBold, styles.fontSize16, { marginBottom: 10 }]}
             >
-              {item.fullName}
+              {item.name}
             </Text>
-            <Text style={styles.fontSize14}>{item.reason}</Text>
+            <Text style={styles.fontSize14}>{item.note}</Text>
           </View>
-          <Text style={styles.fontSize14}>{formatDate(item.dateTime)}</Text>
+          {/* <Text style={styles.fontSize14}>{formatDate(item.dateTime)}</Text> */}
+          <Text style={styles.fontSize14}>{item.time}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -101,8 +136,8 @@ export default function Appointment({ show, handleShowModal }) {
       {loading && <ActivityIndicator size="large" />}
       {!loading && (
         <FlatList
-          data={items}
-          extraData={items}
+          data={lists}
+          extraData={lists}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
           style={styles.w100}

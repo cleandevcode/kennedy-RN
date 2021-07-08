@@ -1,9 +1,13 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
-import MedicineImg from "../assets/medicine.png";
-import NoteImg from "../assets/notes.png";
-import CalendarImg from "../assets/calendar.png";
-import SocketImg from "../assets/socket.png";
+// import MedicineImg from "../assets/medicine.png";
+// import NoteImg from "../assets/notes.png";
+// import CalendarImg from "../assets/calendar.png";
+// import SocketImg from "../assets/socket.png";
+import MedicineImg from "../assets/medicine_black.png";
+import NoteImg from "../assets/notes_black.png";
+import CalendarImg from "../assets/calendar_black.png";
+import SocketImg from "../assets/socket_black.png";
 
 const lists = [
   {
@@ -65,7 +69,8 @@ export default function Sidebar() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00164E",
+    // backgroundColor: "#00164E",
+    backgroundColor: '#f9f9f9',
     display: "flex",
     flexDirection: "column",
     padding: 40,
@@ -73,16 +78,20 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontSize: 22,
-    color: "white",
+    // color: "white",
+    color: 'black',
     marginBottom: 30,
-    fontFamily: 'Poppins_400Regular'
+    fontFamily: 'Poppins_400Regular',
+    fontWeight: '700'
   },
   card: {
-    backgroundColor: "#082671",
+    // backgroundColor: "#082671",
+    backgroundColor: '#e8e8e9',
     height: 50,
     marginBottom: 20,
     borderRadius: 5,
-    color: "white",
+    // color: "white",
+    color: 'black',
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -105,15 +114,18 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    backgroundColor: "#00164E",
+    // backgroundColor: "#00164E",
+    backgroundColor: '#d7d7d7'
   },
   character: {
-    color: "white",
+    // color: "white",
+    color: 'black',
     fontSize: 14,
     fontFamily: 'Poppins_400Regular'
   },
   whiteText: {
-    color: "white",
+    // color: "white",
+    color: 'black',
     fontSize: 16,
     fontFamily: 'Poppins_400Regular'
   },
