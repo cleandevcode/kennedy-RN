@@ -1,66 +1,33 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, Modal } from "react-native";
+import React from "react";
 import AppLoading from "expo-app-loading";
 import { useFonts } from "expo-font";
 import { Poppins_400Regular } from "@expo-google-fonts/poppins";
-import Sidebar from "./components/Sidebar";
 import Appointment from "./pages/Appointment/Appointment";
-import Footer from "./components/Footer";
-import AppointmentModal from "./pages/Appointment/AppointmentModal";
+import SignIn from "./pages/SignIn/SignIn";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { Provider } from "react-redux";
+import store from "./store/index";
 
 export default function App() {
+  const Stack = createStackNavigator();
+  const signed = false;
+
   const [fontsLoaded] = useFonts({ Poppins_400Regular });
-
-  const [show, setShow] = useState(false);
-
-  const handleShow = () => {
-    setShow(!show);
-  };
 
   if (!fontsLoaded) {
     return <AppLoading />;
   }
 
   return (
-    <>
-      <View style={styles.container}>
-        <View style={styles.sidebar}>
-          <Sidebar />
-        </View>
-        <View style={styles.mainContainer}>
-          <View style={styles.content}>
-            <Appointment show={show} handleShowModal={handleShow} />
-          </View>
-          <View style={styles.inputContent}>
-            <Footer />
-          </View>
-        </View>
-      </View>
-      {show && <AppointmentModal show={show} handleShow={handleShow} />}
-    </>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator headerMode="none">
+          <Stack.Screen name="Appointment" component={Appointment} />
+          <Stack.Screen name="SignIn" component={SignIn} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
+  return <></>;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    display: "flex",
-    flexDirection: "row",
-  },
-  sidebar: {
-    width: "30%",
-    height: "100%",
-  },
-  mainContainer: {
-    width: "70%",
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
-  },
-  content: {
-    height: "85%",
-  },
-  inputContent: {
-    height: "15%",
-  },
-});

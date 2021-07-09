@@ -10,6 +10,10 @@ import {
 } from "react-native";
 import AddImg from "../../assets/add.png";
 import moment from "moment";
+import GlobalStyles from "../../style/globalStyle";
+import Sidebar from "../../components/Sidebar";
+import Footer from "../../components/Footer";
+import AppointmentModal from "./AppointmentModal";
 
 const randomColors = ["#03cec23d", "#ce03c63d", "#bdff003d"];
 
@@ -40,9 +44,10 @@ const lists = [
   },
 ];
 
-export default function Appointment({ show, handleShowModal }) {
+export default function Appointment() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [show, setShow] = useState(false);
 
   // useEffect(() => {
   //   if (!show) fetchAppointments();
@@ -108,7 +113,13 @@ export default function Appointment({ show, handleShowModal }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={GlobalStyles.container}>
+        <View style={GlobalStyles.sidebar}>
+          <Sidebar />
+        </View>
+        <View style={GlobalStyles.mainContainer}>
+          <View style={GlobalStyles.content}>
+          <View style={styles.container}>
       <Text style={[styles.fongSize24, styles.fontBold]}>Today</Text>
       <Text
         style={[
@@ -125,7 +136,7 @@ export default function Appointment({ show, handleShowModal }) {
         </Text>
         <TouchableOpacity
           style={styles.flexContainer}
-          onPress={handleShowModal}
+          onPress={()=>setShow(!show)}
         >
           <Image style={styles.addImg} source={AddImg} />
           <Text style={[styles.fontSize18, { marginLeft: 5 }]}>
@@ -144,6 +155,15 @@ export default function Appointment({ show, handleShowModal }) {
         />
       )}
     </View>
+          </View>
+          <View style={GlobalStyles.inputContent}>
+            <Footer />
+          </View>
+        </View>
+      {show && <AppointmentModal show={show} handleShow={()=>setShow(!show)} />}
+
+      </View>
+    
   );
 }
 

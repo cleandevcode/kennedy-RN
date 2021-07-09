@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f9f9f9',
     display: "flex",
     flexDirection: "column",
-    padding: 40,
+    padding: 30,
     justifyContent: "space-between",
   },
   logo: {
