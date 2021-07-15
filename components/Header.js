@@ -1,9 +1,369 @@
-import { func } from 'prop-types';
-import React from 'react';
-import {View, Text, TouchableOpacity, Image} from 'react-native';
+import React, { useState } from "react";
+import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
+import { useSelector } from "react-redux";
+import GlobalStyles from "../style/globalStyle";
+import LogoutImg from "../assets/logout.png";
+import SocketImg from "../assets/socket_big.png";
+import * as Colors from "../style/color";
 
-export default function Header({}) {
+const patient = {
+  chartNumber: null,
+  createdAt: "2021-06-15T01:00:53.635Z",
+  deletedAt: null,
+  dob: "1978-01-13",
+  docter: null,
+  gender: "Female",
+  id: "97119",
+  name: "Dennis, Andrea",
+  phone: "905-",
+  rosterStatus: null,
+  status: "AC",
+  updatedAt: "2021-06-15T01:00:53.635Z",
+};
+
+const GeneralInfo = () => {
+  return (
+    <View>
+      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
+        <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+          Address:{" "}
+        </Text>
+        <Text
+          style={[
+            GlobalStyles.font14,
+            GlobalStyles.defaultFontFamily,
+            GlobalStyles.fontBold,
+          ]}
+        >
+          12 Arctic Wolfe Rd
+        </Text>
+      </View>
+      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
+        <View style={GlobalStyles.rowContainer}>
+          <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+            City:{" "}
+          </Text>
+          <Text
+            style={[
+              GlobalStyles.font14,
+              GlobalStyles.defaultFontFamily,
+              GlobalStyles.fontBold,
+            ]}
+          >
+            Brampton
+          </Text>
+        </View>
+        <View style={[GlobalStyles.rowContainer, { marginLeft: 15 }]}>
+          <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+            Province:{" "}
+          </Text>
+          <Text
+            style={[
+              GlobalStyles.font14,
+              GlobalStyles.defaultFontFamily,
+              GlobalStyles.fontBold,
+            ]}
+          >
+            ON
+          </Text>
+        </View>
+      </View>
+      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
+        <View style={GlobalStyles.rowContainer}>
+          <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+            Phone:{" "}
+          </Text>
+          <Text
+            style={[
+              GlobalStyles.font14,
+              GlobalStyles.defaultFontFamily,
+              GlobalStyles.fontBold,
+            ]}
+          >
+            N/A
+          </Text>
+        </View>
+        <View style={[GlobalStyles.rowContainer, { marginLeft: 15 }]}>
+          <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+            Alternate Phone:{" "}
+          </Text>
+          <Text
+            style={[
+              GlobalStyles.font14,
+              GlobalStyles.defaultFontFamily,
+              GlobalStyles.fontBold,
+            ]}
+          >
+            647-915-6559
+          </Text>
+        </View>
+      </View>
+      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
+        <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+          Email:{" "}
+        </Text>
+        <Text
+          style={[
+            GlobalStyles.font14,
+            GlobalStyles.defaultFontFamily,
+            GlobalStyles.fontBold,
+          ]}
+        >
+          andrea.dennis78@yahoo.ca
+        </Text>
+      </View>
+      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
+        <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+          Official Language:{" "}
+        </Text>
+        <Text
+          style={[
+            GlobalStyles.font14,
+            GlobalStyles.defaultFontFamily,
+            GlobalStyles.fontBold,
+          ]}
+        >
+          English
+        </Text>
+      </View>
+    </View>
+  );
+};
+
+const History = () => {
+  return (
+    <View>
+      <Text>Prescription History</Text>
+    </View>
+  );
+};
+
+const Appointments = () => {
+  return (
+    <View>
+      <Text>Appointments</Text>
+    </View>
+  );
+};
+
+const Category = ({ lists, selectedCategory, handleSelectCategory }) => {
+  return (
+    <View style={{ marginTop: 10 }}>
+      {lists.map((item, index) => (
+        <TouchableOpacity
+          key={item.id}
+          style={[
+            styles.categoryItem,
+            {
+              backgroundColor:
+                selectedCategory === index ? Colors.mediumGrey : Colors.white,
+            },
+          ]}
+          onPress={() => handleSelectCategory(item.id)}
+        >
+          <Text
+            style={[
+              GlobalStyles.font14,
+              GlobalStyles.fontBold,
+              GlobalStyles.defaultFontFamily,
+            ]}
+          >
+            {item.title}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
+  );
+};
+
+const Content = ({ selectedId }) => {
+  if (selectedId === 0) {
+    return <GeneralInfo />;
+  } else if (selectedId === 1) {
+    return <History />;
+  } else if (selectedId === 2) {
+    return <Appointments />;
+  } else {
+    return <View />;
+  }
+};
+
+const PatientDetail = () => {
+  const lists = [
+    {
+      id: 0,
+      title: "General Info",
+    },
+    {
+      id: 1,
+      title: "Prescription History",
+    },
+    {
+      id: 2,
+      title: "Appointments",
+    },
+  ];
+
+  const [selectedCategory, setCategory] = useState(0);
+
+  const handleCategory = (id) => {
+    setCategory(id);
+  };
+
+  return (
+    <View style={styles.detailsContainer}>
+      <View style={styles.categoryContainer}>
+        <Category
+          lists={lists}
+          selectedCategory={selectedCategory}
+          handleSelectCategory={handleCategory}
+        />
+      </View>
+      <View style={styles.contentContainer}>
+        <Content selectedId={selectedCategory} />
+      </View>
+    </View>
+  );
+};
+
+export default function Header() {
+  const [show, setShow] = useState(false);
+  // const patient = useSelector((state) => state.patient.patient);
+  if (patient) {
     return (
-
-    )
+      <>
+        <View style={styles.container}>
+          <View style={styles.topContainer}>
+            <View style={GlobalStyles.rowContainer}>
+              <TouchableOpacity onPress={() => setShow(!show)}>
+                <Text
+                  style={[
+                    GlobalStyles.font20,
+                    GlobalStyles.defaultFontFamily,
+                    GlobalStyles.fontBold,
+                  ]}
+                >
+                  {patient.name}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <Text
+              style={[
+                GlobalStyles.font14,
+                GlobalStyles.defaultFontFamily,
+                { color: "grey" },
+              ]}
+            >
+              DOB : {patient.dob} Gender : {patient.gender} Phone :{" "}
+              {patient.phone}
+            </Text>
+          </View>
+          <View style={GlobalStyles.rowContainer}>
+            <View
+              style={[
+                GlobalStyles.rowContainer,
+                {
+                  backgroundColor: Colors.grey,
+                  marginRight: 10,
+                  width: 150,
+                  padding: 10,
+                  borderRadius: 8,
+                },
+              ]}
+            >
+              <Image source={SocketImg} style={[{ width: 20, height: 25 }]} />
+              <View
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginLeft: 10,
+                }}
+              >
+                <Text
+                  style={[
+                    GlobalStyles.fontBold,
+                    GlobalStyles.defaultFontFamily,
+                    GlobalStyles.font14,
+                  ]}
+                >
+                  Dr. Test Test
+                </Text>
+                <Text
+                  style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}
+                >
+                  KMC
+                </Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              style={[styles.imageContainer, { backgroundColor: Colors.grey }]}
+            >
+              <Image source={LogoutImg} style={styles.logoutImg} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        {show && <PatientDetail />}
+      </>
+    );
+  }
+  return <View></View>;
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingVertical: 15,
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "white",
+    width: "100%",
+    paddingHorizontal: 30,
+    paddingTop: 30,
+  },
+  topContainer: {
+    display: "flex",
+  },
+  logoutImg: {
+    width: 20,
+    height: 20,
+  },
+  imageContainer: {
+    padding: 20,
+    borderRadius: 8,
+  },
+  detailsContainer: {
+    borderTopColor: "grey",
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    borderTopWidth: 1,
+    display: "flex",
+    flexDirection: "row",
+    position: "absolute",
+    top: 110,
+    height: "70%",
+    backgroundColor: "white",
+    zIndex: 99,
+    width: "100%",
+  },
+  categoryContainer: {
+    width: "30%",
+    display: "flex",
+    paddingRight: 15,
+  },
+  contentContainer: {
+    width: "70%",
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderLeftColor: Colors.mediumGrey,
+    borderLeftWidth: 1,
+  },
+  categoryItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderRadius: 20,
+  },
+  marginBottom10: {
+    marginBottom: 10,
+  },
+});

@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import VoiceImg from "../../assets/voice.png";
 import GoogleSignInImg from "../../assets/google.png";
 import * as AppAuth from "expo-app-auth";
+import GlobalStyles from "../../style/globalStyle";
 
 const config = {
   issuer: "https://accounts.google.com",
@@ -12,7 +13,7 @@ const config = {
   clientId: process.env.REACT_APP_GOOGLE_CLIENT_ID,
 };
 
-const StorageKey = "@MyApp:CustomGoogleOAuthKey";
+const StorageKey = process.env.REACT_APP_STORAGE_KEY_AUTH;
 
 export default function SignIn({ navigation }) {
   const [authState, setAuthState] = useState(null);
@@ -96,14 +97,22 @@ export default function SignIn({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.betweenContainer}>
-        <Text style={styles.font20}>gojitech</Text>
+        <Text style={GlobalStyles.font20}>gojitech</Text>
         <Image source={VoiceImg} style={styles.voice} />
       </View>
       <View style={styles.center}>
-        <Text style={[styles.font36, styles.fontBold, { marginBottom: 15 }]}>
+        <Text
+          style={[
+            GlobalStyles.font36,
+            GlobalStyles.fontBold,
+            { marginBottom: 15 },
+          ]}
+        >
           Get Started
         </Text>
-        <Text style={[styles.font24, styles.textGrey, { marginBottom: 20 }]}>
+        <Text
+          style={[GlobalStyles.font24, styles.textGrey, { marginBottom: 20 }]}
+        >
           Continue with your Google Account
         </Text>
         <TouchableOpacity
@@ -119,11 +128,13 @@ export default function SignIn({ navigation }) {
         </TouchableOpacity>
       </View>
       <View style={styles.betweenContainer}>
-        <Text style={styles.font14}>gojitech</Text>
+        <Text style={GlobalStyles.font14}>gojitech</Text>
         <View style={styles.rowContainer}>
-          <Text style={[styles.font14, styles.fontBold]}>Build: </Text>
-          <Text style={styles.font14}>Frontend: 0.1 | </Text>
-          <Text style={styles.font14}>Backend: 1.2</Text>
+          <Text style={[GlobalStyles.font14, GlobalStyles.fontBold]}>
+            Build:{" "}
+          </Text>
+          <Text style={GlobalStyles.font14}>Frontend: 0.1 | </Text>
+          <Text style={GlobalStyles.font14}>Backend: 1.2</Text>
         </View>
       </View>
     </View>
@@ -149,24 +160,6 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     flexDirection: "row",
-  },
-  fontBold: {
-    fontWeight: "bold",
-  },
-  font20: {
-    fontSize: 20,
-  },
-  font14: {
-    fontSize: 14,
-  },
-  font36: {
-    fontSize: 36,
-  },
-  font24: {
-    fontSize: 24,
-  },
-  font22: {
-    fontSize: 22,
   },
   textGrey: {
     color: "#ACADAF",

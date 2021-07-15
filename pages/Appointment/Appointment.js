@@ -11,8 +11,7 @@ import {
 import AddImg from "../../assets/add.png";
 import moment from "moment";
 import GlobalStyles from "../../style/globalStyle";
-import Sidebar from "../../components/Sidebar";
-import Footer from "../../components/Footer";
+import { SideBar, SideBar2, Footer } from "../../components";
 import AppointmentModal from "./AppointmentModal";
 
 const randomColors = ["#03cec23d", "#ce03c63d", "#bdff003d"];
@@ -53,12 +52,12 @@ export default function Appointment() {
   //   if (!show) fetchAppointments();
   // }, [show]);
 
-  useEffect(()=>{
+  useEffect(() => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
     }, 2000);
-  }, [])
+  }, []);
 
   const fetchAppointments = () => {
     setLoading(true);
@@ -114,56 +113,56 @@ export default function Appointment() {
 
   return (
     <View style={GlobalStyles.container}>
-        <View style={GlobalStyles.sidebar}>
-          <Sidebar />
-        </View>
-        <View style={GlobalStyles.mainContainer}>
-          <View style={GlobalStyles.content}>
-          <View style={styles.container}>
-      <Text style={[styles.fongSize24, styles.fontBold]}>Today</Text>
-      <Text
-        style={[
-          styles.fontSize14,
-          styles.fontBold,
-          { marginBottom: 30, marginTop: 10 },
-        ]}
-      >
-        Friday, April 21 2021
-      </Text>
-      <View style={[styles.flexContainer, styles.spaceBetweenContent]}>
-        <Text style={[styles.fontSize18, styles.fontBold]}>
-          Upcoming Appointments
-        </Text>
-        <TouchableOpacity
-          style={styles.flexContainer}
-          onPress={()=>setShow(!show)}
-        >
-          <Image style={styles.addImg} source={AddImg} />
-          <Text style={[styles.fontSize18, { marginLeft: 5 }]}>
-            New Appointment
-          </Text>
-        </TouchableOpacity>
+      <View style={GlobalStyles.sidebar}>
+        <SideBar2 />
       </View>
-      {loading && <ActivityIndicator size="large" />}
-      {!loading && (
-        <FlatList
-          data={lists}
-          extraData={lists}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-          style={styles.w100}
-        />
+      <View style={GlobalStyles.mainContainer}>
+        <View style={GlobalStyles.content}>
+          <View style={styles.container}>
+            <Text style={[styles.fongSize24, styles.fontBold]}>Today</Text>
+            <Text
+              style={[
+                styles.fontSize14,
+                styles.fontBold,
+                { marginBottom: 30, marginTop: 10 },
+              ]}
+            >
+              Friday, April 21 2021
+            </Text>
+            <View style={[styles.flexContainer, styles.spaceBetweenContent]}>
+              <Text style={[styles.fontSize18, styles.fontBold]}>
+                Upcoming Appointments
+              </Text>
+              <TouchableOpacity
+                style={styles.flexContainer}
+                onPress={() => setShow(!show)}
+              >
+                <Image style={styles.addImg} source={AddImg} />
+                <Text style={[styles.fontSize18, { marginLeft: 5 }]}>
+                  New Appointment
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {loading && <ActivityIndicator size="large" />}
+            {!loading && (
+              <FlatList
+                data={lists}
+                extraData={lists}
+                renderItem={renderItem}
+                keyExtractor={(item) => item.id}
+                style={styles.w100}
+              />
+            )}
+          </View>
+        </View>
+        <View style={GlobalStyles.inputContent}>
+          <Footer />
+        </View>
+      </View>
+      {show && (
+        <AppointmentModal show={show} handleShow={() => setShow(!show)} />
       )}
     </View>
-          </View>
-          <View style={GlobalStyles.inputContent}>
-            <Footer />
-          </View>
-        </View>
-      {show && <AppointmentModal show={show} handleShow={()=>setShow(!show)} />}
-
-      </View>
-    
   );
 }
 

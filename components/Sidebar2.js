@@ -1,38 +1,38 @@
 import React from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-// import MedicineImg from "../assets/medicine.png";
-// import NoteImg from "../assets/notes.png";
-// import CalendarImg from "../assets/calendar.png";
-// import SocketImg from "../assets/socket.png";
-import MedicineImg from "../assets/medicine_black.png";
-import NoteImg from "../assets/notes_black.png";
-import CalendarImg from "../assets/calendar_black.png";
-import SocketImg from "../assets/socket_black.png";
+import HomeImg from "../assets/voice_white.png";
+import OrderImg from "../assets/rxcart.png";
+import NoteImg from "../assets/note_big.png";
+import HistoryImg from "../assets/history.png";
+import SocketImg from "../assets/socket.png";
 
 import * as Color from "../style/color";
 
 const lists = [
   {
-    id: 1,
-    name: "New Prescription",
-    icon: MedicineImg,
-    character: "P",
+    id: 0,
+    name: "Home",
+    icon: HomeImg,
     page: "Prescription",
   },
   {
+    id: 1,
+    name: "Rx Order",
+    icon: OrderImg,
+    page: "Cart",
+  },
+  {
     id: 2,
-    name: "Create a Note",
-    icon: NoteImg,
-    character: "N",
-    page: "Note",
+    name: "Rx History",
+    icon: HistoryImg,
+    page: "History",
   },
   {
     id: 3,
-    name: "Calendar",
-    icon: CalendarImg,
-    character: "C",
-    page: "Calendar",
+    name: "Note",
+    icon: NoteImg,
+    page: "Note",
   },
 ];
 
@@ -40,20 +40,14 @@ const Card = ({ icon, name, desc, character, page, handlePress }) => (
   <TouchableOpacity style={styles.card} onPress={() => handlePress(page)}>
     <View style={styles.flexContainer}>
       <Image source={icon} style={styles.icon} />
-      <View style={{ marginLeft: 10 }}>
+      <View style={{ marginTop: 5 }}>
         <Text style={styles.whiteText}>{name}</Text>
-        {desc && <Text style={{ fontSize: 12, color: "#6a8ee8" }}>{desc}</Text>}
       </View>
     </View>
-    {character && (
-      <View style={styles.characterContent}>
-        <Text style={styles.character}>{character}</Text>
-      </View>
-    )}
   </TouchableOpacity>
 );
 
-export default function Sidebar() {
+export default function Sidebar2() {
   const navigation = useNavigation();
 
   const handlePress = (page) => {
@@ -62,8 +56,8 @@ export default function Sidebar() {
 
   return (
     <View style={styles.container}>
-      <View>
-        <Text style={styles.logo}>gojitech</Text>
+      <View style={{ alignItems: "center" }}>
+        <Text style={styles.logo}>g</Text>
         {lists.map((item) => (
           <Card
             key={item.id}
@@ -75,7 +69,6 @@ export default function Sidebar() {
           />
         ))}
       </View>
-      <Card icon={SocketImg} name="Dr.John Adams" desc="ABC Clinic" />
     </View>
   );
 }
@@ -83,43 +76,35 @@ export default function Sidebar() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: "#00164E",
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#00164E",
     display: "flex",
     flexDirection: "column",
-    padding: 30,
     justifyContent: "space-between",
+    paddingTop: 30,
   },
   logo: {
-    fontSize: 22,
-    // color: "white",
-    color: "black",
-    marginBottom: 30,
+    fontSize: 36,
+    color: "white",
+    marginBottom: 50,
     fontFamily: "Poppins_400Regular",
-    fontWeight: "700",
   },
   card: {
-    // backgroundColor: "#082671",
-    backgroundColor: Color.lightGrey,
-    height: 50,
-    marginBottom: 20,
+    marginBottom: 30,
     borderRadius: 5,
-    // color: "white",
-    color: "black",
+    color: "white",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 20,
     alignItems: "center",
   },
   flexContainer: {
     display: "flex",
-    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
   },
   icon: {
-    width: 15,
-    height: 15,
+    width: 25,
+    height: 23,
   },
   characterContent: {
     display: "flex",
@@ -128,18 +113,10 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
-    // backgroundColor: "#00164E",
-    backgroundColor: "#d7d7d7",
-  },
-  character: {
-    // color: "white",
-    color: "black",
-    fontSize: 14,
-    fontFamily: "Poppins_400Regular",
+    backgroundColor: "#00164E",
   },
   whiteText: {
-    // color: "white",
-    color: "black",
+    color: "white",
     fontSize: 16,
     fontFamily: "Poppins_400Regular",
   },
