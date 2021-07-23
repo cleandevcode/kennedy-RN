@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TextInput,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { useSelector } from "react-redux";
 import GlobalStyles from "../../style/globalStyle";
@@ -19,6 +20,7 @@ import DropDownImg from "../../assets/dropDown.png";
 import MedicineImg from "../../assets/medicine_blue.png";
 
 import { useNavigation } from "@react-navigation/native";
+import { getDrugsCandidates } from "../../service/base.service";
 
 const data = [
   { key: 0, label: "Fruits" },
@@ -34,32 +36,42 @@ const data = [
   { key: 4, label: "Vegetable", customKey: "Not a fruit" },
 ];
 
-const patient = {
-  chartNumber: null,
-  createdAt: "2021-06-15T01:00:53.635Z",
-  deletedAt: null,
-  dob: "1978-01-13",
-  docter: null,
-  gender: "Female",
-  id: "97119",
-  name: "Dennis, Andrea",
-  phone: "905-",
-  rosterStatus: null,
-  status: "AC",
-  updatedAt: "2021-06-15T01:00:53.635Z",
-};
-
 export default function Prescription() {
   const navigation = useNavigation();
 
   const [drugName, setDrugName] = useState("");
+  const [drugs, setDrugs] = useState([]);
 
-  // const patient = useSelector((state) => state.patient.patient);
+  const patient = useSelector((state) => state.patient.patient);
 
   const prescriptionData = useSelector((state) => state.prescription.data);
 
-  console.log("patient>>>>", patient);
-  console.log("prescription data>>>>>", prescriptionData);
+  useEffect(() => {
+    if (drugName.length > 0) {
+      getDrugCandidats();
+    }
+  }, [drugName]);
+
+  const handleDrugName = (txt) => {
+    setDrugName(txt);
+  };
+
+  const handleText = (text) => {
+    console.log("2222>>>>", text);
+  };
+
+  const getDrugCandidats = () => {
+    getDrugsCandidates(drugName)
+      .then((res) => {
+        console.log("1111>>>>", res);
+        if (res?.status === 200 && res?.data?.result) {
+          setDrugs(res.data.result);
+        }
+      })
+      .catch((err) => {
+        console.log("000000000000>>>>>>>>>>>", err);
+      });
+  };
 
   return (
     <View style={GlobalStyles.container}>
@@ -83,7 +95,7 @@ export default function Prescription() {
                 >
                   What drug would you like to prescribe ?
                 </Text>
-                {!prescriptionData?.drugs && (
+                {/* {!prescriptionData?.drugs && (
                   <ModalSelector
                     data={data}
                     initValue="Select something yummy!"
@@ -135,7 +147,7 @@ export default function Prescription() {
                       <Image source={DropDownImg} width={25} height={20} />
                     </TouchableOpacity>
                   </ModalSelector>
-                )}
+                )} */}
               </View>
               <View style={styles.drugsContainer}>
                 <Text
@@ -165,6 +177,24 @@ export default function Prescription() {
                   Take 2 tablets every 3 hours for 4 days
                 </Text>
               </View>
+              {drugs && drugs.length > 0 && (
+                <ScrollView horizontal={true} style={{ maxHeight: 50 }}>
+                  {drugs.map((item, index) => (
+                    <TouchableOpacity key={index} style={styles.drugContent}>
+                      <Text
+                        style={[
+                          GlobalStyles.font14,
+                          GlobalStyles.defaultFontFamily,
+                          GlobalStyles.fontBold,
+                          { color: Colors.primatyBlue },
+                        ]}
+                      >
+                        {item.name}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              )}
             </View>
           )}
         </View>
@@ -173,8 +203,9 @@ export default function Prescription() {
         >
           <Text>Go to Summary</Text>
         </TouchableOpacity>
+
         <View style={GlobalStyles.inputContent}>
-          <Footer />
+          <Footer handleKeyPress={handleDrugName} handleText={handleText} />
         </View>
       </View>
     </View>
@@ -190,5 +221,15 @@ const styles = StyleSheet.create({
   },
   drugsContainer: {
     marginBottom: 50,
+  },
+  drugContent: {
+    backgroundColor: Colors.lightGrey,
+    borderRadius: 8,
+    marginRight: 20,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
+    justifyContent: "center",
+    alignItems: "center",
+    height: 30,
   },
 });

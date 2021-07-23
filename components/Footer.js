@@ -16,13 +16,14 @@ import * as MediaLibrary from "expo-media-library";
 
 import axios from "axios";
 
-export default function Footer() {
+export default function Footer({ handleKeyPress, handleText }) {
   // const [permission, askForPermission] = usePermissions(
   //   Permissions.AUDIO_RECORDING,
   //   { ask: true }
   // );
   const [listening, setListening] = useState(false);
   const [recording, setRecording] = useState(null);
+  const [text, setText] = useState("");
 
   const handlePressListening = () => {
     // if (!permission || permission.status !== "granted") {
@@ -80,10 +81,30 @@ export default function Footer() {
     // }
   };
 
+  const handleChangeText = (txt) => {
+    setText(txt);
+  };
+
+  const handleSubmit = () => {
+    handleText(text);
+    setText("");
+  };
+
+  const _handleKeyPress = () => {
+    handleKeyPress(text);
+  };
+
   return (
     <View style={styles.container}>
       <View>
-        <TextInput placeholder={placeholder} style={styles.textInput} />
+        <TextInput
+          placeholder={placeholder}
+          style={styles.textInput}
+          value={text}
+          onChangeText={(value) => handleChangeText(value)}
+          onSubmitEditing={handleSubmit}
+          onKeyPress={_handleKeyPress}
+        />
       </View>
       <TouchableOpacity
         style={[

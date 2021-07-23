@@ -1,4 +1,5 @@
-export { default as Appointment } from "./Appointment/Appointment";
+// export { default as Appointment } from "./Appointment/Appointment";
+export { default as Appointment } from "./Appointment/NewAppointment";
 export { default as Prescription } from "./Prescription/Prescription";
 export { default as PrescriptionSummary } from "./Prescription/PrescriptionSummary";
 export { default as Calendar } from "./Calendar/Calendar";
@@ -7,3 +8,5 @@ export { default as Note } from "./Note/Note";
 export { default as CreateNote } from "./Note/CreateNote";
 export { default as SignIn } from "./SignIn/SignIn";
 export { default as History } from "./History/History";
+export { default as SoapNote } from "./SoapNote/SoapNote";
+export { default as CreateSoapNote } from "./SoapNote/CreateNotes";

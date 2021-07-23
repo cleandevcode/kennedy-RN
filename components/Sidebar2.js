@@ -32,7 +32,7 @@ const lists = [
     id: 3,
     name: "Note",
     icon: NoteImg,
-    page: "Note",
+    page: "SoapNote",
   },
 ];
 

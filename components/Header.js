@@ -1,47 +1,23 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Text, TouchableOpacity, Image } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import GlobalStyles from "../style/globalStyle";
 import LogoutImg from "../assets/logout.png";
 import SocketImg from "../assets/socket_big.png";
+import SwitchImg from "../assets/switch.png";
+
 import * as Colors from "../style/color";
 
-const patient = {
-  chartNumber: null,
-  createdAt: "2021-06-15T01:00:53.635Z",
-  deletedAt: null,
-  dob: "1978-01-13",
-  docter: null,
-  gender: "Female",
-  id: "97119",
-  name: "Dennis, Andrea",
-  phone: "905-",
-  rosterStatus: null,
-  status: "AC",
-  updatedAt: "2021-06-15T01:00:53.635Z",
-};
-
 const GeneralInfo = () => {
-  return (
-    <View>
-      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
-        <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-          Address:{" "}
-        </Text>
-        <Text
-          style={[
-            GlobalStyles.font14,
-            GlobalStyles.defaultFontFamily,
-            GlobalStyles.fontBold,
-          ]}
-        >
-          12 Arctic Wolfe Rd
-        </Text>
-      </View>
-      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
-        <View style={GlobalStyles.rowContainer}>
+  const patient = useSelector((state) => state.patient.patient);
+
+  if (patient !== null) {
+    const { address, city, postal, province } = patient.address;
+    return (
+      <View>
+        <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
           <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-            City:{" "}
+            Address:{" "}
           </Text>
           <Text
             style={[
@@ -50,12 +26,72 @@ const GeneralInfo = () => {
               GlobalStyles.fontBold,
             ]}
           >
-            Brampton
+            {formatText(address)}
           </Text>
         </View>
-        <View style={[GlobalStyles.rowContainer, { marginLeft: 15 }]}>
+        <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
+          <View style={GlobalStyles.rowContainer}>
+            <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+              City:{" "}
+            </Text>
+            <Text
+              style={[
+                GlobalStyles.font14,
+                GlobalStyles.defaultFontFamily,
+                GlobalStyles.fontBold,
+              ]}
+            >
+              {formatText(city)}
+            </Text>
+          </View>
+          <View style={[GlobalStyles.rowContainer, { marginLeft: 15 }]}>
+            <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+              Province:{" "}
+            </Text>
+            <Text
+              style={[
+                GlobalStyles.font14,
+                GlobalStyles.defaultFontFamily,
+                GlobalStyles.fontBold,
+              ]}
+            >
+              {formatText(province)}
+            </Text>
+          </View>
+        </View>
+        <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
+          <View style={GlobalStyles.rowContainer}>
+            <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+              Phone:{" "}
+            </Text>
+            <Text
+              style={[
+                GlobalStyles.font14,
+                GlobalStyles.defaultFontFamily,
+                GlobalStyles.fontBold,
+              ]}
+            >
+              {formatText(patient.phone)}
+            </Text>
+          </View>
+          <View style={[GlobalStyles.rowContainer, { marginLeft: 15 }]}>
+            <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
+              Alternate Phone:{" "}
+            </Text>
+            <Text
+              style={[
+                GlobalStyles.font14,
+                GlobalStyles.defaultFontFamily,
+                GlobalStyles.fontBold,
+              ]}
+            >
+              N/A
+            </Text>
+          </View>
+        </View>
+        <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
           <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-            Province:{" "}
+            Email:{" "}
           </Text>
           <Text
             style={[
@@ -64,14 +100,12 @@ const GeneralInfo = () => {
               GlobalStyles.fontBold,
             ]}
           >
-            ON
+            {formatText(patient.email)}
           </Text>
         </View>
-      </View>
-      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
-        <View style={GlobalStyles.rowContainer}>
+        <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
           <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-            Phone:{" "}
+            Official Language:{" "}
           </Text>
           <Text
             style={[
@@ -80,54 +114,14 @@ const GeneralInfo = () => {
               GlobalStyles.fontBold,
             ]}
           >
-            N/A
-          </Text>
-        </View>
-        <View style={[GlobalStyles.rowContainer, { marginLeft: 15 }]}>
-          <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-            Alternate Phone:{" "}
-          </Text>
-          <Text
-            style={[
-              GlobalStyles.font14,
-              GlobalStyles.defaultFontFamily,
-              GlobalStyles.fontBold,
-            ]}
-          >
-            647-915-6559
+            {formatText(patient.officialLanguage)}
           </Text>
         </View>
       </View>
-      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
-        <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-          Email:{" "}
-        </Text>
-        <Text
-          style={[
-            GlobalStyles.font14,
-            GlobalStyles.defaultFontFamily,
-            GlobalStyles.fontBold,
-          ]}
-        >
-          andrea.dennis78@yahoo.ca
-        </Text>
-      </View>
-      <View style={[GlobalStyles.rowContainer, styles.marginBottom10]}>
-        <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-          Official Language:{" "}
-        </Text>
-        <Text
-          style={[
-            GlobalStyles.font14,
-            GlobalStyles.defaultFontFamily,
-            GlobalStyles.fontBold,
-          ]}
-        >
-          English
-        </Text>
-      </View>
-    </View>
-  );
+    );
+  }
+
+  return <View></View>;
 };
 
 const History = () => {
@@ -226,10 +220,23 @@ const PatientDetail = () => {
   );
 };
 
+const formatText = (data) => {
+  return data ? data : "N/A";
+};
+
 export default function Header() {
+  const dispatch = useDispatch();
   const [show, setShow] = useState(false);
-  // const patient = useSelector((state) => state.patient.patient);
-  if (patient) {
+  const patient = useSelector((state) => state.patient.patient);
+
+  const handleChangePatient = () => {
+    dispatch({
+      type: "UPDATE_PATIENT",
+      payload: null,
+    });
+  };
+
+  if (patient !== null) {
     return (
       <>
         <View style={styles.container}>
@@ -243,8 +250,14 @@ export default function Header() {
                     GlobalStyles.fontBold,
                   ]}
                 >
-                  {patient.name}
+                  {patient.firstName} {patient.lastName}
                 </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{ marginLeft: 10 }}
+                onPress={handleChangePatient}
+              >
+                <Image source={SwitchImg} width={15} height={15}></Image>
               </TouchableOpacity>
             </View>
             <Text
@@ -254,8 +267,9 @@ export default function Header() {
                 { color: "grey" },
               ]}
             >
-              DOB : {patient.dob} Gender : {patient.gender} Phone :{" "}
-              {patient.phone}
+              DOB : {patient.dateOfBirth} {"  "} Gender : {patient.sex} {"  "}
+              Phone:
+              {formatText(patient.phone)}
             </Text>
           </View>
           <View style={GlobalStyles.rowContainer}>
