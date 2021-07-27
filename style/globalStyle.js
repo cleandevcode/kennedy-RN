@@ -64,10 +64,10 @@ const GlobalStyles = StyleSheet.create({
     paddingVertical: 6,
   },
   radius20: {
-    borderRadius: 20
-  },  
+    borderRadius: 20,
+  },
   radius8: {
-    borderRadius: 8
+    borderRadius: 8,
   },
   character: {
     backgroundColor: "white",

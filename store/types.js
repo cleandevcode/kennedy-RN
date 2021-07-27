@@ -8,7 +8,7 @@ export const UPDATE_PATIENT = "UPDATE_PATIENT";
 
 //prescription
 export const UPDATE_PRESCRIPTION = "UPDATE_PRESCRIPTION";
-
+export const SET_DRUG_CANDIDATES = "SET_DRUG_CANDIDATES";
 //SOAP Notes
 export const SET_SOAP_STEP = "SET_SOAP_STEP";
 export const SET_SOAP_CURRENT_STEP = "SET_SOAP_CURRENT_STEP";

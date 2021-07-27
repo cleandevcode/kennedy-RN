@@ -4,3 +4,5 @@ export { default as SideBar } from "./Sidebar";
 export { default as SideBar2 } from "./Sidebar2";
 export { default as SearchPatient } from "./SearchPatient";
 export { default as ChooseTemplate } from "./ChooseTemplate";
+export { default as CartCard } from "./CartCard";
+export { default as SelectModal } from "./SelectModal";

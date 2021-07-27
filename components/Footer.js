@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -13,7 +13,6 @@ import ListeningImg from "../assets/listening.png";
 import { Audio } from "expo-av";
 import * as FileSystem from "expo-file-system";
 import * as MediaLibrary from "expo-media-library";
-
 import axios from "axios";
 
 export default function Footer({ handleKeyPress, handleText }) {
@@ -48,9 +47,28 @@ export default function Footer({ handleKeyPress, handleText }) {
         playsInSilentModeIOS: true,
       });
       console.log("Starting recording...");
-      const { recording } = await Audio.Recording.createAsync(
-        Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
-      );
+      let temp = {
+        android: {
+          audioEncoder: 3,
+          bitRate: 128000,
+          extension: ".wav",
+          numberOfChannels: 1,
+          outputFormat: 2,
+          sampleRate: 44100,
+        },
+        ios: {
+          audioQuality: 127,
+          bitRate: 128000,
+          extension: ".caf",
+          linearPCMBitDepth: 16,
+          linearPCMIsBigEndian: false,
+          linearPCMIsFloat: false,
+          numberOfChannels: 2,
+          sampleRate: 44100,
+        },
+        isMeteringEnabled: true,
+      };
+      const { recording } = await Audio.Recording.createAsync(temp);
       setRecording(recording);
       console.log("Recording started");
     } catch (error) {
@@ -62,23 +80,51 @@ export default function Footer({ handleKeyPress, handleText }) {
     console.log("Stopping recording..");
     setRecording(undefined);
     await recording.stopAndUnloadAsync();
-    // const uri = recording.getURI();
-    const uri = await FileSystem.readAsStringAsync(recording.getURI(), {
-      encoding: "base64",
+    const fileUri = recording.getURI();
+    console.log("file uri>>>>>", fileUri);
+    const uri = await FileSystem.readAsStringAsync(fileUri, {
+      encoding: FileSystem.EncodingType.Base64,
     });
-    audioTest(uri);
+    // audioTest("data:audio/wav;base64," + uri);
 
-    // const perm = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
-    // if (perm.status != "granted") {
-    //   return;
-    // }
-    // try {
-    //   const assets = await MediaLibrary.createAssetAsync(uri);
-    //   console.log("Recording stopped and stored at", assets);
-    //   // audioTest(uri);
-    // } catch (error) {
-    //   console.log("media library error>>>>", error);
-    // }
+    const perm = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+    if (perm.status != "granted") {
+      return;
+    }
+    try {
+      const assets = await MediaLibrary.createAssetAsync(fileUri);
+      console.log("Recording stopped and stored at", assets);
+      // audioTest(uri);
+    } catch (error) {
+      console.log("media library error>>>>", error);
+    }
+  };
+
+  const audioTest = async (base64) => {
+    // console.log("env>>>", process.env);
+    let config = {
+      headers: {
+        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Ik1hcmlldHRhNDRAaG90bWFpbC5jb20iLCJuYW1lIjoiTGlsYSBCcmVpdGVuYmVyZyIsInRva2VuSWQiOiIiLCJpYXQiOjE2MjczMDE2MDgsImV4cCI6MTYyOTg5MzYwOH0.bEbRGmmS-lQoC0UZsifL3p62dQiRBYW9j9_8Ev-T4Ts`,
+      },
+    };
+    const apiUrl = "https://kennedy-dev1.gojitech.systems/api/v1/record";
+
+    console.log("base641>>>>", base64);
+
+    let response = await axios.post(
+      apiUrl,
+      {
+        base64Content: "data:audio/wav;" + base64,
+        userID: "467397c0-df24-4150-a80f-3b82974e5deb",
+      },
+      config
+    );
+
+    alert(response.data.responseCode);
+
+    console.log("base642>>>>", base64);
+
+    console.log("record res>>>>", response);
   };
 
   const handleChangeText = (txt) => {
@@ -122,33 +168,6 @@ export default function Footer({ handleKeyPress, handleText }) {
     </View>
   );
 }
-
-const audioTest = async (base64) => {
-  console.log("env>>>", process.env);
-  let config = {
-    headers: {
-      Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Ik1lbGFueTU2QHlhaG9vLmNvbSIsIm5hbWUiOiJQZW5ueSBTY2h1cHBlIiwidG9rZW5JZCI6IiIsImlhdCI6MTYyNTk2NTM3OSwiZXhwIjoxNjI4NTU3Mzc5fQ.dD7tGTfAxjmT8FcAoyfRx2O-rbsFZN3Ag0gwnFOWsf8 `,
-    },
-  };
-  const apiUrl = "https://kennedy-dev1.gojitech.systems/api/v1/record";
-
-  console.log("base641>>>>", base64);
-
-  let response = await axios.post(
-    apiUrl,
-    {
-      base64Content: base64,
-      userID: "467397c0-df24-4150-a80f-3b82974e5deb",
-    },
-    config
-  );
-
-  alert(response.data.responseCode);
-
-  console.log("base642>>>>", base64);
-
-  console.log("record res>>>>", response);
-};
 
 const styles = StyleSheet.create({
   container: {

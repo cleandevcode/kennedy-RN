@@ -6,14 +6,22 @@ import {
   TouchableOpacity,
   Image,
   TextInput,
+  ScrollView,
 } from "react-native";
+import { useSelector } from "react-redux";
 import GlobalStyles from "../../style/globalStyle";
-import { SideBar2, Footer, SideBar, Header } from "../../components";
+import {
+  SideBar2,
+  Footer,
+  SideBar,
+  Header,
+  SelectModal,
+} from "../../components";
 import ModalSelector from "react-native-modal-selector-searchable";
 import DropDownImg from "../../assets/dropDown.png";
 import * as Colors from "../../style/color";
 
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
 const data = [
   { key: 0, label: "Fruits" },
@@ -32,6 +40,44 @@ const data = [
 export default function PrescriptionSummary() {
   const [drugName, setDrugName] = useState("Fruits");
   const navigation = useNavigation();
+  const route = useRoute();
+  const { params } = route;
+  console.log(">>>>", route);
+
+  const [state, setState] = useState({
+    drugId: params.drugId,
+    brandName: params.brandName,
+    providerNo: 0,
+    takeMin: 0,
+    takeMax: 0,
+    rxDate: params.endDate,
+    frequency: params?.frequency,
+    duration: params?.duration || "0",
+    durationUnit: params?.durationUnit,
+    route: "string",
+    method: "string",
+    prn: true,
+    repeats: params.repeats || 0,
+    quantity: Math.round(Number(params.quantity)).toString() || "0",
+    instructions: params.instructions || params.transcription,
+    additionalInstructions: "",
+    archived: true,
+    archivedReason: "",
+    archivedDate: null,
+    strength: 0,
+    strengthUnit: "string",
+    externalProvider: "",
+    longTerm: true,
+    noSubstitutions: true,
+    drugUnits: params.drugUnits,
+    endDate: params.endDate,
+  });
+
+  const handleChangeDrug = (drug) => {
+    setState({ ...state, drugId: drug.key, brandName: drug.label });
+  };
+
+  const drugCandidates = useSelector((state) => state.prescription.drugs);
 
   return (
     <View style={GlobalStyles.container}>
@@ -68,7 +114,7 @@ export default function PrescriptionSummary() {
                 <Text style={GlobalStyles.character}>C</Text>
                 <Text
                   style={[
-                    GlobalStyles.font16,
+                    GlobalStyles.font12,
                     GlobalStyles.defaultFontFamily,
                     { color: "white", marginLeft: 10 },
                   ]}
@@ -77,11 +123,11 @@ export default function PrescriptionSummary() {
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={styles.mainContainer}>
+            <ScrollView style={styles.mainContainer}>
               <View style={GlobalStyles.rowContainer}>
                 <Text
                   style={[
-                    GlobalStyles.font16,
+                    GlobalStyles.font14,
                     GlobalStyles.defaultFontFamily,
                     GlobalStyles.fontBold,
                     { marginRight: 15 },
@@ -89,7 +135,12 @@ export default function PrescriptionSummary() {
                 >
                   Medication:
                 </Text>
-                <ModalSelector
+                <SelectModal
+                  lists={drugCandidates}
+                  drugName={state.brandName}
+                  handleChangeDrug={handleChangeDrug}
+                />
+                {/* <ModalSelector
                   data={data}
                   initValue="Select something yummy!"
                   supportedOrientations={["landscape"]}
@@ -97,7 +148,7 @@ export default function PrescriptionSummary() {
                   scrollViewAccessibilityLabel={"Scrollable options"}
                   cancelButtonAccessibilityLabel={"Cancel Button"}
                   cancelText="Cancel"
-                  cancelTextStyle={GlobalStyles.font16}
+                  cancelTextStyle={GlobalStyles.font14}
                   onChange={(option) => {
                     setDrugName(option.label);
                   }}
@@ -135,12 +186,12 @@ export default function PrescriptionSummary() {
                     </View>
                     <Image source={DropDownImg} width={15} height={10} />
                   </TouchableOpacity>
-                </ModalSelector>
+                </ModalSelector> */}
               </View>
               <View style={GlobalStyles.rowContainer}>
                 <Text
                   style={[
-                    GlobalStyles.font16,
+                    GlobalStyles.font14,
                     GlobalStyles.defaultFontFamily,
                     GlobalStyles.fontBold,
                     { marginRight: 15 },
@@ -149,9 +200,9 @@ export default function PrescriptionSummary() {
                   Duration:
                 </Text>
                 <TextInput
-                  value="90 days"
+                  value={state.duration}
                   style={[
-                    GlobalStyles.font16,
+                    GlobalStyles.font14,
                     GlobalStyles.defaultFontFamily,
                     { color: Colors.primatyBlue },
                   ]}
@@ -161,7 +212,7 @@ export default function PrescriptionSummary() {
                 <View style={[GlobalStyles.rowContainer, { marginRight: 20 }]}>
                   <Text
                     style={[
-                      GlobalStyles.font16,
+                      GlobalStyles.font14,
                       GlobalStyles.defaultFontFamily,
                       GlobalStyles.fontBold,
                       { marginRight: 15 },
@@ -170,9 +221,9 @@ export default function PrescriptionSummary() {
                     Quantity:
                   </Text>
                   <TextInput
-                    value="2"
+                    value={state.quantity}
                     style={[
-                      GlobalStyles.font16,
+                      GlobalStyles.font14,
                       GlobalStyles.defaultFontFamily,
                       { color: Colors.primatyBlue },
                     ]}
@@ -181,7 +232,7 @@ export default function PrescriptionSummary() {
                 <View style={GlobalStyles.rowContainer}>
                   <Text
                     style={[
-                      GlobalStyles.font16,
+                      GlobalStyles.font14,
                       GlobalStyles.defaultFontFamily,
                       GlobalStyles.fontBold,
                       { marginRight: 15 },
@@ -190,9 +241,9 @@ export default function PrescriptionSummary() {
                     Unit:
                   </Text>
                   <TextInput
-                    value="Capsules"
+                    value={state.drugUnits}
                     style={[
-                      GlobalStyles.font16,
+                      GlobalStyles.font14,
                       GlobalStyles.defaultFontFamily,
                       { color: Colors.primatyBlue },
                     ]}
@@ -202,7 +253,7 @@ export default function PrescriptionSummary() {
               <View style={GlobalStyles.rowContainer}>
                 <Text
                   style={[
-                    GlobalStyles.font16,
+                    GlobalStyles.font14,
                     GlobalStyles.defaultFontFamily,
                     GlobalStyles.fontBold,
                     { marginRight: 15 },
@@ -211,9 +262,9 @@ export default function PrescriptionSummary() {
                   Refills:
                 </Text>
                 <TextInput
-                  value="3"
+                  value={state.repeats}
                   style={[
-                    GlobalStyles.font16,
+                    GlobalStyles.font14,
                     GlobalStyles.defaultFontFamily,
                     { color: Colors.primatyBlue },
                   ]}
@@ -223,7 +274,7 @@ export default function PrescriptionSummary() {
                 <View style={[GlobalStyles.rowContainer, { marginRight: 20 }]}>
                   <Text
                     style={[
-                      GlobalStyles.font16,
+                      GlobalStyles.font14,
                       GlobalStyles.defaultFontFamily,
                       GlobalStyles.fontBold,
                       { marginRight: 15 },
@@ -232,9 +283,9 @@ export default function PrescriptionSummary() {
                     Start Date:
                   </Text>
                   <TextInput
-                    value="04/04/21"
+                    value={state.rxDate}
                     style={[
-                      GlobalStyles.font16,
+                      GlobalStyles.font14,
                       GlobalStyles.defaultFontFamily,
                       { color: Colors.primatyBlue },
                     ]}
@@ -243,7 +294,7 @@ export default function PrescriptionSummary() {
                 <View style={GlobalStyles.rowContainer}>
                   <Text
                     style={[
-                      GlobalStyles.font16,
+                      GlobalStyles.font14,
                       GlobalStyles.defaultFontFamily,
                       GlobalStyles.fontBold,
                       { marginRight: 15 },
@@ -252,9 +303,9 @@ export default function PrescriptionSummary() {
                     End Date:
                   </Text>
                   <TextInput
-                    value="04/07/21"
+                    value={state.endDate}
                     style={[
-                      GlobalStyles.font16,
+                      GlobalStyles.font14,
                       GlobalStyles.defaultFontFamily,
                       { color: Colors.primatyBlue },
                     ]}
@@ -263,7 +314,7 @@ export default function PrescriptionSummary() {
               </View>
               <Text
                 style={[
-                  GlobalStyles.font16,
+                  GlobalStyles.font14,
                   GlobalStyles.defaultFontFamily,
                   GlobalStyles.fontBold,
                   { marginRight: 15, marginTop: 10 },
@@ -273,7 +324,7 @@ export default function PrescriptionSummary() {
               </Text>
               <TextInput
                 style={[
-                  GlobalStyles.font16,
+                  GlobalStyles.font14,
                   GlobalStyles.defaultFontFamily,
                   {
                     color: Colors.primatyBlue,
@@ -285,10 +336,11 @@ export default function PrescriptionSummary() {
                     marginTop: 5,
                   },
                 ]}
+                value={state.instructions}
               />
               <Text
                 style={[
-                  GlobalStyles.font16,
+                  GlobalStyles.font14,
                   GlobalStyles.defaultFontFamily,
                   GlobalStyles.fontBold,
                   { marginRight: 15, marginTop: 10 },
@@ -299,7 +351,7 @@ export default function PrescriptionSummary() {
               <TextInput
                 multiline={true}
                 style={[
-                  GlobalStyles.font16,
+                  GlobalStyles.font14,
                   GlobalStyles.defaultFontFamily,
                   {
                     color: Colors.primatyBlue,
@@ -312,8 +364,9 @@ export default function PrescriptionSummary() {
                     height: 80,
                   },
                 ]}
+                value={state.additionalInstructions}
               />
-            </View>
+            </ScrollView>
           </View>
         </View>
         <View style={GlobalStyles.inputContent}>
@@ -327,14 +380,14 @@ export default function PrescriptionSummary() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30,
+    padding: 20,
   },
 
   mainContainer: {
-    padding: 20,
+    paddingHorizontal: 10,
     backgroundColor: "white",
     display: "flex",
-    marginTop: 20,
+    marginTop: 10,
     borderRadius: 10,
   },
 });

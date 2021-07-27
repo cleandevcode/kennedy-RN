@@ -7,20 +7,18 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import GlobalStyles from "../../style/globalStyle";
 import { SideBar, Footer, Header, SideBar2 } from "../../components";
-import { SearchPatient } from "../../components";
-import ModalSelector from "react-native-modal-selector-searchable";
+import { SearchPatient, SelectModal } from "../../components";
 
 import * as Colors from "../../style/color";
 
-import DropDownImg from "../../assets/dropDown.png";
-import MedicineImg from "../../assets/medicine_blue.png";
-
 import { useNavigation } from "@react-navigation/native";
-import { getDrugsCandidates } from "../../service/base.service";
+import { getDrugsCandidates, getEntities } from "../../service/base.service";
+import { getFormattedDate } from "../../service/utility";
 
 const data = [
   { key: 0, label: "Fruits" },
@@ -37,18 +35,35 @@ const data = [
 ];
 
 export default function Prescription() {
+  const dispatch = useDispatch();
   const navigation = useNavigation();
 
   const [drugName, setDrugName] = useState("");
-  const [drugs, setDrugs] = useState([]);
+  const [drug, setDrug] = useState(null);
+  const [detail, setDetail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [limit, setLimit] = useState(false);
+
+  const [drugOptions, setDrugOptions] = useState([]);
+
+  const [firstFlag, setFirstflag] = useState(false);
 
   const patient = useSelector((state) => state.patient.patient);
 
-  const prescriptionData = useSelector((state) => state.prescription.data);
+  useEffect(() => {
+    setDrugName("");
+    setDrug(null);
+    setLimit(false);
+    setFirstflag(false);
+    setDrugOptions([]);
+    setDetail("");
+  }, []);
 
   useEffect(() => {
-    if (drugName.length > 0) {
-      getDrugCandidats();
+    if (drugName.length > 4 && !limit) {
+      getDrugCandidats(drugName.substr(0, 4));
+    } else if (drugName.length === 0) {
+      setLimit(false);
     }
   }, [drugName]);
 
@@ -56,22 +71,105 @@ export default function Prescription() {
     setDrugName(txt);
   };
 
+  const analyzeDetail = () => {};
+
   const handleText = (text) => {
-    console.log("2222>>>>", text);
+    if (firstFlag) {
+      setDetail(text);
+      setTimeout(() => {
+        getEntities(text)
+          .then((response) => {
+            if (response.data.responseCode === 1 && response.data.result) {
+              const luisEntities = response.data.result.prediction.entities;
+              const temp = {
+                drugId: drug.key,
+                brandName: drug.label,
+                duration: luisEntities?.drugDuration?.[0].split(" ")[0] || "0",
+                quantity: luisEntities?.drugTotal?.[0].split(" ")[0] || "0",
+                drugUnits: luisEntities?.drugDosage?.[0].split(" ")[1] || "",
+                repeats: luisEntities?.drugRepeat[0] || "0",
+                instructions: "",
+                rxDate: luisEntities?.startDate || getFormattedDate(),
+                endDate: luisEntities?.endDate || getFormattedDate(),
+                note: "",
+                transcription: response?.data?.result?.query,
+                frequency: luisEntities.drugInterval?.[0] || "",
+                durationUnit:
+                  luisEntities?.drugDuration?.[0].split(" ")[1] || "",
+              };
+              dispatch({
+                type: "UPDATE_PRESCRIPTION",
+                payload: temp,
+              });
+              if (temp.brandName.length > 0 && temp.quantity > 0) {
+                handleGoSummary(temp);
+              }
+            }
+          })
+          .catch((err) => {
+            console.log("input text error>>>>>", err);
+          });
+      }, 1000);
+
+      console.log("input text detail>>>>>>>>>>>>>>>>>", detail);
+    }
   };
 
-  const getDrugCandidats = () => {
+  const getDrugCandidats = (drugName) => {
+    setLimit(true);
     getDrugsCandidates(drugName)
       .then((res) => {
-        console.log("1111>>>>", res);
         if (res?.status === 200 && res?.data?.result) {
-          setDrugs(res.data.result);
+          let temp = [];
+
+          res.data.result.map((item) => {
+            temp.push({
+              key: item.id,
+              label: item.name,
+            });
+          });
+
+          setDrugOptions(temp);
+
+          dispatch({
+            type: "SET_DRUG_CANDIDATES",
+            payload: temp,
+          });
         }
       })
       .catch((err) => {
         console.log("000000000000>>>>>>>>>>>", err);
       });
   };
+
+  const handleSetDrug = (item) => {
+    setDrug(item);
+    setFirstflag(true);
+    setDrugName(item.label);
+  };
+
+  const handleGoSummary = (data) => {
+    setTimeout(() => {
+      navigation.navigate("PrescriptionSummary", data);
+      setDrugName("");
+      setLimit(false);
+      setFirstflag(false);
+      setDrugOptions([]);
+      setDetail("");
+    }, 2000);
+  };
+
+  const handleChangeDrug = (drug) => {
+    setDrug(drug);
+  };
+
+  if (loading) {
+    return (
+      <View style={GlobalStyles.container}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
 
   return (
     <View style={GlobalStyles.container}>
@@ -95,115 +193,74 @@ export default function Prescription() {
                 >
                   What drug would you like to prescribe ?
                 </Text>
-                {/* {!prescriptionData?.drugs && (
-                  <ModalSelector
-                    data={data}
-                    initValue="Select something yummy!"
-                    supportedOrientations={["landscape"]}
-                    accessible={true}
-                    scrollViewAccessibilityLabel={"Scrollable options"}
-                    cancelButtonAccessibilityLabel={"Cancel Button"}
-                    cancelText="Cancel"
-                    cancelTextStyle={GlobalStyles.font20}
-                    onChange={(option) => {
-                      setDrugName(option.label);
-                    }}
-                    optionTextStyle={GlobalStyles.font20}
-                    searchTextStyle={GlobalStyles.font20}
-                    searchStyle={{ paddingVertical: 10, borderWidth: 0 }}
+                {firstFlag && drugOptions.length > 0 && (
+                  <SelectModal
+                    lists={drugOptions}
+                    drugName={drug.label}
+                    handleChangeDrug={handleChangeDrug}
+                  />
+                )}
+
+                {drugOptions && drugOptions.length > 0 && !firstFlag && (
+                  <ScrollView
+                    horizontal={true}
+                    style={{ maxHeight: 50, marginTop: 10 }}
                   >
-                    <TouchableOpacity
-                      style={[
-                        GlobalStyles.defaultFontFamily,
-                        {
-                          marginTop: 15,
-                          paddingHorizontal: 15,
-                          height: 60,
-                          borderRadius: 10,
-                          display: "flex",
-                          flexDirection: "row",
-                          width: "80%",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          backgroundColor: "white",
-                        },
-                      ]}
-                      placeholder="Search Drug..."
-                      value={drugName}
-                    >
-                      <View style={GlobalStyles.rowContainer}>
-                        <Image source={MedicineImg} width={25} height={20} />
+                    {drugOptions.map((item, index) => (
+                      <TouchableOpacity
+                        key={index}
+                        style={styles.drugContent}
+                        onPress={() => handleSetDrug(item)}
+                      >
                         <Text
                           style={[
-                            GlobalStyles.font20,
-                            GlobalStyles.fontBold,
+                            GlobalStyles.font14,
                             GlobalStyles.defaultFontFamily,
-                            { marginLeft: 10, color: Colors.primatyBlue },
+                            GlobalStyles.fontBold,
+                            { color: Colors.primatyBlue },
                           ]}
                         >
-                          {drugName}
+                          {item.label}
                         </Text>
-                      </View>
-                      <Image source={DropDownImg} width={25} height={20} />
-                    </TouchableOpacity>
-                  </ModalSelector>
-                )} */}
+                      </TouchableOpacity>
+                    ))}
+                  </ScrollView>
+                )}
               </View>
-              <View style={styles.drugsContainer}>
-                <Text
-                  style={[
-                    GlobalStyles.font24,
-                    GlobalStyles.defaultFontFamily,
-                    GlobalStyles.fontBold,
-                  ]}
-                >
-                  Prescription details for{" "}
-                  {prescriptionData?.drugs?.[0].genericName}
-                </Text>
-                <Text
-                  style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}
-                >
-                  Duration, quantity, refills and additional instructions
-                </Text>
-                {!prescriptionData?.drugs && <View></View>}
-                <Text
-                  style={[
-                    GlobalStyles.font20,
-                    GlobalStyles.defaultFontFamily,
-                    GlobalStyles.fontBold,
-                    { color: Colors.primatyBlue, marginTop: 15 },
-                  ]}
-                >
-                  Take 2 tablets every 3 hours for 4 days
-                </Text>
-              </View>
-              {drugs && drugs.length > 0 && (
-                <ScrollView horizontal={true} style={{ maxHeight: 50 }}>
-                  {drugs.map((item, index) => (
-                    <TouchableOpacity key={index} style={styles.drugContent}>
-                      <Text
-                        style={[
-                          GlobalStyles.font14,
-                          GlobalStyles.defaultFontFamily,
-                          GlobalStyles.fontBold,
-                          { color: Colors.primatyBlue },
-                        ]}
-                      >
-                        {item.name}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
+              {firstFlag && (
+                <View style={styles.drugsContainer}>
+                  <Text
+                    style={[
+                      GlobalStyles.font24,
+                      GlobalStyles.defaultFontFamily,
+                      GlobalStyles.fontBold,
+                    ]}
+                  >
+                    Prescription details for {drug.label}
+                  </Text>
+                  <Text
+                    style={[
+                      GlobalStyles.font14,
+                      GlobalStyles.defaultFontFamily,
+                    ]}
+                  >
+                    Duration, quantity, refills and additional instructions
+                  </Text>
+                  <Text
+                    style={[
+                      GlobalStyles.font20,
+                      GlobalStyles.defaultFontFamily,
+                      GlobalStyles.fontBold,
+                      { color: Colors.primatyBlue, marginTop: 15 },
+                    ]}
+                  >
+                    {detail}
+                  </Text>
+                </View>
               )}
             </View>
           )}
         </View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("PrescriptionSummary")}
-        >
-          <Text>Go to Summary</Text>
-        </TouchableOpacity>
-
         <View style={GlobalStyles.inputContent}>
           <Footer handleKeyPress={handleDrugName} handleText={handleText} />
         </View>
@@ -220,7 +277,7 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   drugsContainer: {
-    marginBottom: 50,
+    marginBottom: 10,
   },
   drugContent: {
     backgroundColor: Colors.lightGrey,

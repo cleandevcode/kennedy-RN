@@ -17,3 +17,9 @@ export function getDrugsCandidates(keyword) {
 }
 
 //prescription
+export function getEntities(string) {
+  const url = base_url + "/api/v1/test/inputtext";
+  return axios.post(url, {
+    phrase: string,
+  });
+}
