@@ -23,3 +23,15 @@ export function getEntities(string) {
     phrase: string,
   });
 }
+
+//notes
+
+export function getNotes(id) {
+  const url = base_url + "/api/v1/oscar/notes/?demographicNo=" + id;
+  return axios.get(url);
+}
+
+export function createNotes(param) {
+  const url = base_url + "/api/v1/oscar/notes";
+  return axios.post(url, param);
+}

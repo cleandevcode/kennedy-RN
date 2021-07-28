@@ -23,22 +23,7 @@ import * as Colors from "../../style/color";
 
 import { useNavigation, useRoute } from "@react-navigation/native";
 
-const data = [
-  { key: 0, label: "Fruits" },
-  { key: 1, label: "Red Apples" },
-  { key: 2, label: "Cherries" },
-  {
-    key: 3,
-    label: "Cranberries",
-    accessibilityLabel: "Tap here for cranberries",
-  },
-  // etc...
-  // Can also add additional custom keys which are passed to the onChange callback
-  { key: 4, label: "Vegetable", customKey: "Not a fruit" },
-];
-
 export default function PrescriptionSummary() {
-  const [drugName, setDrugName] = useState("Fruits");
   const navigation = useNavigation();
   const route = useRoute();
   const { params } = route;

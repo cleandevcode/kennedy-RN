@@ -13,6 +13,7 @@ import GlobalStyles from "../style/globalStyle";
 import BackImg from "../assets/back.png";
 import * as Colors from "../style/color";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
 
 export default function ChooseTemplate({
   suggested,
@@ -22,13 +23,24 @@ export default function ChooseTemplate({
   description,
 }) {
   const navigation = useNavigation();
-  const handleBack = () => {};
+  const dispatch = useDispatch();
+  const handleBack = () => {
+    navigation.navigate("Note");
+  };
+
+  const _handleTemplate = (ele) => {
+    // handleTemplate(ele)
+    dispatch({
+      type: "SET_SOAP_TEMPLATE",
+      payload: ele.name,
+    });
+  };
 
   const _renderItem = ({ item }) => {
     return (
       <TouchableOpacity
         style={styles.cardItem}
-        onPress={() => handleTemplate(item)}
+        onPress={() => _handleTemplate(item)}
       >
         <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
           {item.name}

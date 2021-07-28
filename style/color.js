@@ -12,3 +12,4 @@ export const step_complete = "#00a976";
 export const step_disabled_bg = "#e2e2e2";
 export const step_disabled_fg = "#737373";
 export const answer_blue = "#018c9f";
+export const note_title = "#3a7dff";

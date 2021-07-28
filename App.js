@@ -21,6 +21,7 @@ import {
   PrescriptionSummary,
   CreateNote,
   SoapNote,
+  CreateSoapNote,
 } from "./pages";
 
 const persistor = persistStore(store);
@@ -53,7 +54,7 @@ export default function App() {
             <Stack.Screen name="Cart" component={Cart} />
             <Stack.Screen name="History" component={History} />
             <Stack.Screen name="SoapNote" component={SoapNote} />
-            <Stack.Screen name="CreateSoapNote" component={SoapNote} />
+            <Stack.Screen name="CreateSoapNote" component={CreateSoapNote} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>

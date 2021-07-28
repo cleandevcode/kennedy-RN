@@ -53,7 +53,7 @@ export default function Footer({ handleKeyPress, handleText }) {
           bitRate: 128000,
           extension: ".wav",
           numberOfChannels: 1,
-          outputFormat: 2,
+          outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_LINEARPCM,
           sampleRate: 44100,
         },
         ios: {

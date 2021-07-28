@@ -1,13 +1,24 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useSelector } from "react-redux";
+
+import { getNotes } from "../../service/base.service";
 
 import GlobalStyles from "../../style/globalStyle";
 import { SideBar2, Footer, SideBar, Header } from "../../components";
-import * as Colors from "../../style/color"
+import * as Colors from "../../style/color";
 import ListItem from "./ListItem";
 
-import AddImg from "../../assets/plus.png"
+import AddImg from "../../assets/plus.png";
 import CalendarImg from "../../assets/calendar1.png";
 import YellowCalendarImg from "../../assets/calendar_yellow.png";
 
@@ -35,7 +46,8 @@ const lists = [
     description: "Generally healthy appearing.....",
     content:
       " lorem ipsum orem psumorem ipsumorem ipsumorem ipsumorem ipsumorem ipSneak peak on note contents lorem ipsum orem ipsumorem ipsumorem ipsumorem ipsumorem ipsumorem ipsumorem ipsumorem ipsumorem ipsumorem ip....................",
-  },{
+  },
+  {
     id: 3,
     title: "Follow-up bypass surgery",
     date: "23rd May 2021",
@@ -47,11 +59,53 @@ const lists = [
 
 export default function Note() {
   const navigation = useNavigation();
-  const [selectedIndex, setIndex] = useState(0);
+  const patient = useSelector((state) => state.patient.patient);
 
-  const handleClick = (id) => {
-    setIndex(id)
-  }
+  const [selectedIndex, setIndex] = useState(0);
+  const [loading, setLoading] = useState(0);
+  const [lists, setLists] = useState([]);
+  const [selectedId, setSelectedNoteId] = useState("");
+
+  const handleClick = (index, id) => {
+    setIndex(index);
+    setSelectedNoteId(id);
+  };
+
+  useEffect(() => {
+    if (patient && patient?.demographicNo) {
+      setLoading(true);
+
+      getNotes(patient?.demographicNo)
+        .then((res) => {
+          if (res && res.status === 200 && res.data?.responseCode === 1) {
+            setLists(res.data.result);
+            setSelectedNoteId(res.data.result[0].id);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, []);
+
+  const makeDisplayData = (obj) => {
+    let result = "";
+    if (obj) {
+      Object.keys(obj).map(
+        (ele) =>
+          (result +=
+            ele +
+            ":" +
+            "\n" +
+            obj[ele].map((item) => item.question + "\n" + item.answer + "\n"))
+      );
+    }
+
+    return result;
+  };
 
   return (
     <View style={GlobalStyles.container}>
@@ -62,56 +116,163 @@ export default function Note() {
         <Header />
         <View style={GlobalStyles.content}>
           <View style={styles.container}>
-            <View style={[GlobalStyles.rowContainer, {justifyContent: 'space-between', marginBottom: 20}]}>
-              <Text style={[GlobalStyles.font24, GlobalStyles.defaultFontFamily, GlobalStyles.fontBold]}>Notes</Text>
-              <TouchableOpacity style={[GlobalStyles.defaultButton,GlobalStyles.radius20,  GlobalStyles.rowContainer, {backgroundColor: Colors.mainBlue}]} onPress={()=>navigation.navigate("CreateNote")}>
-                <Image source={AddImg} style={{width: 15, height: 15}} />
+            <View
+              style={[
+                GlobalStyles.rowContainer,
+                { justifyContent: "space-between", marginBottom: 10 },
+              ]}
+            >
+              <Text
+                style={[
+                  GlobalStyles.font24,
+                  GlobalStyles.defaultFontFamily,
+                  GlobalStyles.fontBold,
+                ]}
+              >
+                Notes
+              </Text>
+              <TouchableOpacity
+                style={[
+                  GlobalStyles.defaultButton,
+                  GlobalStyles.radius20,
+                  GlobalStyles.rowContainer,
+                  { backgroundColor: Colors.mainBlue },
+                ]}
+                onPress={() => navigation.navigate("SoapNote")}
+              >
+                <Image source={AddImg} style={{ width: 15, height: 15 }} />
                 <Text
-                    style={
-                    [GlobalStyles.font16,
-                      GlobalStyles.defaultFontFamily,
-                      { color: "white", marginLeft: 10 }
-                    ]}
-                  >
-                    New
+                  style={[
+                    GlobalStyles.font16,
+                    GlobalStyles.defaultFontFamily,
+                    { color: "white", marginLeft: 10 },
+                  ]}
+                >
+                  New
                 </Text>
               </TouchableOpacity>
             </View>
-            <View style={GlobalStyles.rowContainer}>
-              <ScrollView style={[GlobalStyles.radius8, {width: '38%', backgroundColor: Colors.white, padding: 10, marginRight: '2%'}]}>
-                {lists.map((list, idx) => (
-                  <ListItem
-                    key={idx}
-                    index={selectedIndex}
-                    data={list}
-                    handleClick={handleClick}
-                  />
-                ))}
-              </ScrollView>
-              <View style={[GlobalStyles.radius8, {width: '60%', height: '100%', backgroundColor: Colors.white, padding: 20}]}>
-                  <View style={[GlobalStyles.rowContainer, {justifyContent: 'space-between'}]}>
-                    <View style={[GlobalStyles.rowContainer, {marginBottom: 10}]}>
-                      <Image source={CalendarImg} style={{width: 15, height: 15}} />
-                      <Text style={[GlobalStyles.font14, {color: Colors.mainBlue, marginLeft: 10}]}>{lists[selectedIndex].date}</Text>
-                    </View>
-                    <TouchableOpacity style={[GlobalStyles.rowContainer, GlobalStyles.defaultButton, {backgroundColor: Colors.lightYellow}]}>
-                      <Image source={YellowCalendarImg} style={{width: 12, height: 12}} />
-                      <Text style={[GlobalStyles.font12, GlobalStyles.defaultFontFamily, {color: 'black', marginLeft: 5}]}>1 appointment on this day</Text>
-                    </TouchableOpacity>
-                  </View> 
-                  <Text style={[GlobalStyles.font16, GlobalStyles.fontBold, GlobalStyles.defaultFontFamily]}>
-                    {lists[selectedIndex].title}
-                  </Text>
-                  <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily, {marginTop: 20}]}>
-                    {lists[selectedIndex].description}
-                  </Text>
+            {loading ? (
+              <ActivityIndicator size="large" color={Colors.mainBlue} />
+            ) : lists.length == 0 ? (
+              <View>
+                <Text
+                  style={[GlobalStyles.defaultFontFamily, GlobalStyles.font14]}
+                >
+                  No notes history
+                </Text>
               </View>
-            </View>
+            ) : (
+              <View style={[GlobalStyles.rowContainer, { marginBottom: 20 }]}>
+                <ScrollView
+                  style={[
+                    GlobalStyles.radius8,
+                    {
+                      width: "38%",
+                      backgroundColor: Colors.white,
+                      padding: 10,
+                      marginRight: "2%",
+                      flex: 1,
+                    },
+                  ]}
+                >
+                  {lists.map((list, idx) => (
+                    <ListItem
+                      key={idx}
+                      index={idx}
+                      selectedId={selectedId}
+                      data={list}
+                      handleClick={handleClick}
+                    />
+                  ))}
+                </ScrollView>
+                <View
+                  style={[
+                    GlobalStyles.radius8,
+                    {
+                      width: "60%",
+                      height: "100%",
+                      backgroundColor: Colors.white,
+                      padding: 20,
+                    },
+                  ]}
+                >
+                  <ScrollView>
+                    <View
+                      style={[
+                        GlobalStyles.rowContainer,
+                        { justifyContent: "space-between" },
+                      ]}
+                    >
+                      <View
+                        style={[
+                          GlobalStyles.rowContainer,
+                          { marginBottom: 10 },
+                        ]}
+                      >
+                        <Image
+                          source={CalendarImg}
+                          style={{ width: 15, height: 15 }}
+                        />
+                        <Text
+                          style={[
+                            GlobalStyles.font14,
+                            GlobalStyles.defaultFontFamily,
+                            { color: Colors.mainBlue, marginLeft: 10 },
+                          ]}
+                        >
+                          {lists[selectedIndex]?.observationDate}
+                        </Text>
+                      </View>
+                      <TouchableOpacity
+                        style={[
+                          GlobalStyles.rowContainer,
+                          GlobalStyles.defaultButton,
+                          { backgroundColor: Colors.lightYellow },
+                        ]}
+                      >
+                        <Image
+                          source={YellowCalendarImg}
+                          style={{ width: 12, height: 12 }}
+                        />
+                        <Text
+                          style={[
+                            GlobalStyles.font12,
+                            GlobalStyles.defaultFontFamily,
+                            { color: "black", marginLeft: 5 },
+                          ]}
+                        >
+                          1 appointment on this day
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <Text
+                      style={[
+                        GlobalStyles.font16,
+                        GlobalStyles.fontBold,
+                        GlobalStyles.defaultFontFamily,
+                      ]}
+                    >
+                      {lists[selectedIndex]?.soapNote?.title?.name}
+                    </Text>
+                    <Text
+                      style={[
+                        GlobalStyles.font14,
+                        GlobalStyles.defaultFontFamily,
+                        { marginTop: 20 },
+                      ]}
+                    >
+                      {makeDisplayData(lists[selectedIndex]?.soapNote?.notes)}
+                    </Text>
+                  </ScrollView>
+                </View>
+              </View>
+            )}
           </View>
         </View>
-        <View style={GlobalStyles.inputContent}>
+        {/* <View style={GlobalStyles.inputContent}>
           <Footer />
-        </View>
+        </View> */}
       </View>
     </View>
   );
@@ -120,6 +281,6 @@ export default function Note() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 30
+    padding: 20,
   },
 });

@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { useRoute } from "@react-navigation/native";
 import GlobalStyles from "../../style/globalStyle";
 import * as Colors from "../../style/color";
 import NoteProcessor from "./Processor";
+import Summary from "./Summary";
 
 const themes = [
   {
@@ -34,9 +36,12 @@ const themes = [
   },
 ];
 
-export default function CreateNotes({ data, answer }) {
-  console.log("111data>>>>", data);
+export default function CreateNotes({ data, answer, handleEditAnswer }) {
+  const route = useRoute();
   const dispatch = useDispatch();
+
+  // const { data, answer } = route.params;
+  // console.log("111data>>>>", route.params);
 
   const stepIndex = useSelector((state) => state.soapNotes.soapIndex);
   const currentStep = useSelector((state) => state.soapNotes.currentStep);
@@ -44,7 +49,7 @@ export default function CreateNotes({ data, answer }) {
 
   const totalSteps = useSelector((state) => state.soapNotes.soapLength);
 
-  const handleEditAnswer = () => {};
+  // const handleEditAnswer = () => {};
 
   const showStepStatus = (from, to) => {
     if (currentStep >= from && currentStep <= to) {
@@ -127,7 +132,11 @@ export default function CreateNotes({ data, answer }) {
               ]}
             >
               <Text
-                style={[GlobalStyles.font12, GlobalStyles.defaultFontFamily]}
+                style={[
+                  GlobalStyles.font12,
+                  GlobalStyles.defaultFontFamily,
+                  { color: allSet ? "white" : Colors.step_disabled_fg },
+                ]}
               >
                 Summary
               </Text>
@@ -145,7 +154,7 @@ export default function CreateNotes({ data, answer }) {
       </View>
       <View style={[styles.noteProcessor]}>
         {allSet ? (
-          <></>
+          <Summary />
         ) : (
           <NoteProcessor
             value={data[stepIndex]}

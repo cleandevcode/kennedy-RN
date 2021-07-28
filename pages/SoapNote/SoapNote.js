@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
@@ -94,41 +95,31 @@ const testJSON = {
   ],
 };
 
-const patient = {
-  chartNumber: null,
-  createdAt: "2021-06-15T01:00:53.635Z",
-  deletedAt: null,
-  dob: "1978-01-13",
-  docter: null,
-  gender: "Female",
-  id: "97119",
-  name: "Dennis, Andrea",
-  phone: "905-",
-  rosterStatus: null,
-  status: "AC",
-  updatedAt: "2021-06-15T01:00:53.635Z",
-};
-
 export default function SoapNote() {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const [template, setTemplate] = useState("");
+  // const [template, setTemplate] = useState("");
   const [data, setData] = useState([]);
   const [answer, setAnswer] = useState("");
   const [isProcess, setProcess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const patient = useSelector((state) => state.patient.patient);
+
   const currentStep = useSelector((state) => state.soapNotes.currentStep);
   const totalSteps = useSelector((state) => state.soapNotes.soapLength);
   const stepIdx = useSelector((state) => state.soapNotes.soapIndex);
   const noteDetails = useSelector((state) => state.soapNotes.noteDetails);
+  const template = useSelector((state) => state.soapNotes.template);
+
+  console.log("templates>>>>>>>>>>>>", template);
 
   const handleTemplate = (item) => {
-    setTemplate(item.name);
-    navigation.navigate("CreateSoapNote", {
-      data: data,
-      answer: answer,
-    });
+    // let params = {
+    //   data: data,
+    //   answer: answer,
+    // };
+    // navigation.navigate("CreateSoapNote", params);
   };
 
   useEffect(() => {
@@ -187,36 +178,28 @@ export default function SoapNote() {
     }
   };
 
+  const handleKeyPress = (text) => {};
+
   const handleSetProcess = (process) => {
     setProcess(process);
   };
 
+  console.log("loading>>>>", loading);
+
   const MainRender = () => {
-    if (template === "") {
+    if (loading) {
+      return <ActivityIndicator size="large" color={Colors.mainBlue} />;
+    } else if (!loading && data && data.length > 0) {
       return (
-        <ChooseTemplate
-          suggested={suggested}
-          others={others}
-          handleTemplate={handleTemplate}
-          title="New Note"
-          description="Choose a Template"
+        <CreateNotes
+          data={data}
+          answer={answer}
+          handleEditAnswer={handleAnswers}
         />
       );
+    } else {
+      return <></>;
     }
-    // if (!loading && data && data.length > 0) {
-    //   return (
-    //     <CreateNotes
-    //       data={data}
-    //       answer={answer}
-    //       handleEditAnswer={handleAnswers}
-    //     />
-    //   );
-    // }
-    if (loading) {
-      return <Text>Loading...</Text>;
-    }
-
-    return <></>;
   };
 
   return (
@@ -231,12 +214,22 @@ export default function SoapNote() {
             <SearchPatient />
           ) : (
             <View style={styles.container}>
-              <MainRender />
+              {template.length == 0 ? (
+                <ChooseTemplate
+                  suggested={suggested}
+                  others={others}
+                  handleTemplate={handleTemplate}
+                  title="New Note"
+                  description="Choose a Template"
+                />
+              ) : (
+                <MainRender />
+              )}
             </View>
           )}
         </View>
         <View style={GlobalStyles.inputContent}>
-          <Footer handleText={handleAnswers} />
+          <Footer handleText={handleAnswers} handleKeyPress={handleKeyPress} />
         </View>
       </View>
     </View>
