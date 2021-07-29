@@ -23,8 +23,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
+<<<<<<< HEAD
       },
       "package": "com.freshexpocode.kennedy"
+=======
+      }
+>>>>>>> db24623951864f329b6d829d41dcde2a6cde21e8
     },
     "web": {
       "favicon": "./assets/favicon.png"
