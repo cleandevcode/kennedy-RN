@@ -14,7 +14,13 @@ import { useSelector } from "react-redux";
 import { getNotes } from "../../service/base.service";
 
 import GlobalStyles from "../../style/globalStyle";
-import { SideBar2, Footer, SideBar, Header } from "../../components";
+import {
+  SideBar2,
+  Footer,
+  SideBar,
+  Header,
+  SearchPatient,
+} from "../../components";
 import * as Colors from "../../style/color";
 import ListItem from "./ListItem";
 
@@ -114,165 +120,169 @@ export default function Note() {
       </View>
       <View style={GlobalStyles.mainContainer}>
         <Header />
-        <View style={GlobalStyles.content}>
-          <View style={styles.container}>
-            <View
-              style={[
-                GlobalStyles.rowContainer,
-                { justifyContent: "space-between", marginBottom: 10 },
-              ]}
-            >
-              <Text
+        {patient === null && <SearchPatient />}
+        {patient !== null && (
+          <View style={GlobalStyles.content}>
+            <View style={styles.container}>
+              <View
                 style={[
-                  GlobalStyles.font24,
-                  GlobalStyles.defaultFontFamily,
-                  GlobalStyles.fontBold,
-                ]}
-              >
-                Notes
-              </Text>
-              <TouchableOpacity
-                style={[
-                  GlobalStyles.defaultButton,
-                  GlobalStyles.radius20,
                   GlobalStyles.rowContainer,
-                  { backgroundColor: Colors.mainBlue },
+                  { justifyContent: "space-between", marginBottom: 10 },
                 ]}
-                onPress={() => navigation.navigate("SoapNote")}
               >
-                <Image source={AddImg} style={{ width: 15, height: 15 }} />
                 <Text
                   style={[
-                    GlobalStyles.font16,
+                    GlobalStyles.font24,
                     GlobalStyles.defaultFontFamily,
-                    { color: "white", marginLeft: 10 },
+                    GlobalStyles.fontBold,
                   ]}
                 >
-                  New
+                  Notes
                 </Text>
-              </TouchableOpacity>
-            </View>
-            {loading ? (
-              <ActivityIndicator size="large" color={Colors.mainBlue} />
-            ) : lists.length == 0 ? (
-              <View>
-                <Text
-                  style={[GlobalStyles.defaultFontFamily, GlobalStyles.font14]}
+                <TouchableOpacity
+                  style={[
+                    GlobalStyles.defaultButton,
+                    GlobalStyles.radius20,
+                    GlobalStyles.rowContainer,
+                    { backgroundColor: Colors.mainBlue },
+                  ]}
+                  onPress={() => navigation.navigate("SoapNote")}
                 >
-                  No notes history
-                </Text>
+                  <Image source={AddImg} style={{ width: 15, height: 15 }} />
+                  <Text
+                    style={[
+                      GlobalStyles.font16,
+                      GlobalStyles.defaultFontFamily,
+                      { color: "white", marginLeft: 10 },
+                    ]}
+                  >
+                    New
+                  </Text>
+                </TouchableOpacity>
               </View>
-            ) : (
-              <View style={[GlobalStyles.rowContainer, { marginBottom: 20 }]}>
-                <ScrollView
-                  style={[
-                    GlobalStyles.radius8,
-                    {
-                      width: "38%",
-                      backgroundColor: Colors.white,
-                      padding: 10,
-                      marginRight: "2%",
-                      flex: 1,
-                    },
-                  ]}
-                >
-                  {lists.map((list, idx) => (
-                    <ListItem
-                      key={idx}
-                      index={idx}
-                      selectedId={selectedId}
-                      data={list}
-                      handleClick={handleClick}
-                    />
-                  ))}
-                </ScrollView>
-                <View
-                  style={[
-                    GlobalStyles.radius8,
-                    {
-                      width: "60%",
-                      height: "100%",
-                      backgroundColor: Colors.white,
-                      padding: 20,
-                    },
-                  ]}
-                >
-                  <ScrollView>
-                    <View
-                      style={[
-                        GlobalStyles.rowContainer,
-                        { justifyContent: "space-between" },
-                      ]}
-                    >
+              {loading ? (
+                <ActivityIndicator size="large" color={Colors.mainBlue} />
+              ) : lists.length == 0 ? (
+                <View>
+                  <Text
+                    style={[
+                      GlobalStyles.defaultFontFamily,
+                      GlobalStyles.font14,
+                    ]}
+                  >
+                    No notes history
+                  </Text>
+                </View>
+              ) : (
+                <View style={[GlobalStyles.rowContainer, { marginBottom: 20 }]}>
+                  <ScrollView
+                    style={[
+                      GlobalStyles.radius8,
+                      {
+                        width: "38%",
+                        backgroundColor: Colors.white,
+                        padding: 10,
+                        marginRight: "2%",
+                        flex: 1,
+                        height: "100%",
+                      },
+                    ]}
+                  >
+                    {lists.map((list, idx) => (
+                      <ListItem
+                        key={idx}
+                        index={idx}
+                        selectedId={selectedId}
+                        data={list}
+                        handleClick={handleClick}
+                      />
+                    ))}
+                  </ScrollView>
+                  <View
+                    style={[
+                      GlobalStyles.radius8,
+                      {
+                        width: "60%",
+                        height: "100%",
+                        backgroundColor: Colors.white,
+                        padding: 20,
+                      },
+                    ]}
+                  >
+                    <ScrollView>
                       <View
                         style={[
                           GlobalStyles.rowContainer,
-                          { marginBottom: 10 },
+                          { justifyContent: "space-between" },
                         ]}
                       >
-                        <Image
-                          source={CalendarImg}
-                          style={{ width: 15, height: 15 }}
-                        />
-                        <Text
+                        <View
                           style={[
-                            GlobalStyles.font14,
-                            GlobalStyles.defaultFontFamily,
-                            { color: Colors.mainBlue, marginLeft: 10 },
+                            GlobalStyles.rowContainer,
+                            { marginBottom: 10 },
                           ]}
                         >
-                          {lists[selectedIndex]?.observationDate}
-                        </Text>
+                          <Image
+                            source={CalendarImg}
+                            style={{ width: 15, height: 15 }}
+                          />
+                          <Text
+                            style={[
+                              GlobalStyles.font14,
+                              GlobalStyles.defaultFontFamily,
+                              { color: Colors.mainBlue, marginLeft: 10 },
+                            ]}
+                          >
+                            {lists[selectedIndex]?.observationDate}
+                          </Text>
+                        </View>
+                        <TouchableOpacity
+                          style={[
+                            GlobalStyles.rowContainer,
+                            GlobalStyles.defaultButton,
+                            { backgroundColor: Colors.lightYellow },
+                          ]}
+                        >
+                          <Image
+                            source={YellowCalendarImg}
+                            style={{ width: 12, height: 12 }}
+                          />
+                          <Text
+                            style={[
+                              GlobalStyles.font12,
+                              GlobalStyles.defaultFontFamily,
+                              { color: "black", marginLeft: 5 },
+                            ]}
+                          >
+                            1 appointment on this day
+                          </Text>
+                        </TouchableOpacity>
                       </View>
-                      <TouchableOpacity
+                      <Text
                         style={[
-                          GlobalStyles.rowContainer,
-                          GlobalStyles.defaultButton,
-                          { backgroundColor: Colors.lightYellow },
+                          GlobalStyles.font16,
+                          GlobalStyles.fontBold,
+                          GlobalStyles.defaultFontFamily,
                         ]}
                       >
-                        <Image
-                          source={YellowCalendarImg}
-                          style={{ width: 12, height: 12 }}
-                        />
-                        <Text
-                          style={[
-                            GlobalStyles.font12,
-                            GlobalStyles.defaultFontFamily,
-                            { color: "black", marginLeft: 5 },
-                          ]}
-                        >
-                          1 appointment on this day
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                    <Text
-                      style={[
-                        GlobalStyles.font16,
-                        GlobalStyles.fontBold,
-                        GlobalStyles.defaultFontFamily,
-                      ]}
-                    >
-                      {lists[selectedIndex]?.soapNote?.title?.name}
-                    </Text>
-                    <Text
-                      style={[
-                        GlobalStyles.font14,
-                        GlobalStyles.defaultFontFamily,
-                        { marginTop: 20 },
-                      ]}
-                    >
-                      {makeDisplayData(lists[selectedIndex]?.soapNote?.notes)}
-                    </Text>
-                  </ScrollView>
+                        {lists[selectedIndex]?.soapNote?.title?.name}
+                      </Text>
+                      <Text
+                        style={[
+                          GlobalStyles.font14,
+                          GlobalStyles.defaultFontFamily,
+                          { marginTop: 20 },
+                        ]}
+                      >
+                        {makeDisplayData(lists[selectedIndex]?.soapNote?.notes)}
+                      </Text>
+                    </ScrollView>
+                  </View>
                 </View>
-              </View>
-            )}
+              )}
+            </View>
           </View>
-        </View>
-        {/* <View style={GlobalStyles.inputContent}>
-          <Footer />
-        </View> */}
+        )}
       </View>
     </View>
   );

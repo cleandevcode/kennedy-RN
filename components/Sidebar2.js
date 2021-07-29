@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   whiteText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "Poppins_400Regular",
   },
 });

@@ -66,6 +66,8 @@ export default function Summary() {
   const template = useSelector((state) => state.soapNotes.template);
   const patient = useSelector((state) => state.patient.patient);
 
+  console.log("here summary>>>>>>>>>>>>", template);
+
   const prepareRequest = (obj) => {
     let result = template + "\n\n";
 

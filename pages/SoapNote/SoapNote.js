@@ -112,14 +112,8 @@ export default function SoapNote() {
   const noteDetails = useSelector((state) => state.soapNotes.noteDetails);
   const template = useSelector((state) => state.soapNotes.template);
 
-  console.log("templates>>>>>>>>>>>>", template);
-
   const handleTemplate = (item) => {
-    // let params = {
-    //   data: data,
-    //   answer: answer,
-    // };
-    // navigation.navigate("CreateSoapNote", params);
+    // setTemplate(item);
   };
 
   useEffect(() => {
@@ -130,6 +124,19 @@ export default function SoapNote() {
       payload: testJSON,
     });
   }, []);
+
+  useEffect(() => {
+    if (template && template.length > 0 && data) {
+      console.log("herer>>>", template);
+      console.log();
+      let params = {
+        data: data,
+        answer: answer,
+      };
+
+      navigation.navigate("CreateSoapNote", params);
+    }
+  }, [template]);
 
   const calcStepRange = (json) => {
     setLoading(true);
@@ -157,8 +164,6 @@ export default function SoapNote() {
     setLoading(false);
   };
 
-  console.log("000data>>>>", data);
-
   const handleAnswers = (answer) => {
     setAnswer(answer);
 
@@ -184,24 +189,6 @@ export default function SoapNote() {
     setProcess(process);
   };
 
-  console.log("loading>>>>", loading);
-
-  const MainRender = () => {
-    if (loading) {
-      return <ActivityIndicator size="large" color={Colors.mainBlue} />;
-    } else if (!loading && data && data.length > 0) {
-      return (
-        <CreateNotes
-          data={data}
-          answer={answer}
-          handleEditAnswer={handleAnswers}
-        />
-      );
-    } else {
-      return <></>;
-    }
-  };
-
   return (
     <View style={GlobalStyles.container}>
       <View style={GlobalStyles.sidebar}>
@@ -210,21 +197,16 @@ export default function SoapNote() {
       <View style={GlobalStyles.mainContainer}>
         <View style={GlobalStyles.content}>
           <Header />
-          {patient === null ? (
-            <SearchPatient />
-          ) : (
+          {patient === null && <SearchPatient />}
+          {patient !== null && (
             <View style={styles.container}>
-              {template.length == 0 ? (
-                <ChooseTemplate
-                  suggested={suggested}
-                  others={others}
-                  handleTemplate={handleTemplate}
-                  title="New Note"
-                  description="Choose a Template"
-                />
-              ) : (
-                <MainRender />
-              )}
+              <ChooseTemplate
+                suggested={suggested}
+                others={others}
+                handleTemplate={handleTemplate}
+                title="New Note"
+                description="Choose a Template"
+              />
             </View>
           )}
         </View>

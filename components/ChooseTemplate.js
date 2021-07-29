@@ -29,11 +29,12 @@ export default function ChooseTemplate({
   };
 
   const _handleTemplate = (ele) => {
-    // handleTemplate(ele)
     dispatch({
       type: "SET_SOAP_TEMPLATE",
       payload: ele.name,
     });
+
+    handleTemplate(ele.name);
   };
 
   const _renderItem = ({ item }) => {

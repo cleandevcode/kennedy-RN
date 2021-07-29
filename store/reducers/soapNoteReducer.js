@@ -13,13 +13,11 @@ var initvalues = {
   allSet: false,
   soapLength: 0,
   mandatory: true,
-  template: "testtest",
+  template: "",
 };
 
 const soapNotesReducer = (state = initvalues, action) => {
   switch (action.type) {
-    case TYPES.SET_SOAP_TEMPLATE:
-      return { ...state, template: action.template };
     case TYPES.SET_SOAP_STEP:
       return { ...state, soapIndex: action.payload };
     case TYPES.SET_SOAP_DETAILS:
@@ -32,6 +30,8 @@ const soapNotesReducer = (state = initvalues, action) => {
       return { ...state, soapLength: action.payload };
     case TYPES.SET_SOAP_MANDATORY_ITEM:
       return { ...state, mandatory: action.payload };
+    case TYPES.SET_SOAP_TEMPLATE:
+      return { ...state, template: action.payload };
     default:
       return { ...state };
   }

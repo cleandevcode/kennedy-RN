@@ -12,6 +12,8 @@ import GlobalStyles from "../../style/globalStyle";
 import * as Colors from "../../style/color";
 import NoteProcessor from "./Processor";
 import Summary from "./Summary";
+import Sidebar2 from "../../components/Sidebar2";
+import { Header } from "../../components";
 
 const themes = [
   {
@@ -36,12 +38,14 @@ const themes = [
   },
 ];
 
-export default function CreateNotes({ data, answer, handleEditAnswer }) {
+export default function CreateNotes() {
   const route = useRoute();
   const dispatch = useDispatch();
 
-  // const { data, answer } = route.params;
-  // console.log("111data>>>>", route.params);
+  const { params } = route;
+  console.log("111data>>>>", params);
+
+  const { data, answer } = params;
 
   const stepIndex = useSelector((state) => state.soapNotes.soapIndex);
   const currentStep = useSelector((state) => state.soapNotes.currentStep);
@@ -49,7 +53,7 @@ export default function CreateNotes({ data, answer, handleEditAnswer }) {
 
   const totalSteps = useSelector((state) => state.soapNotes.soapLength);
 
-  // const handleEditAnswer = () => {};
+  const handleEditAnswer = () => {};
 
   const showStepStatus = (from, to) => {
     if (currentStep >= from && currentStep <= to) {
@@ -80,98 +84,118 @@ export default function CreateNotes({ data, answer, handleEditAnswer }) {
   };
 
   return (
-    <>
-      <View
-        style={[
-          GlobalStyles.rowContainer,
-          {
-            justifyContent: "space-between",
-          },
-        ]}
-      >
-        <View style={GlobalStyles.rowContainer}>
-          <ScrollView horizontal>
-            {themes.map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handleStep(index)}
-                style={[
-                  styles.themeCard,
-                  showStepStatus(data[index].from, data[index].to) === "working"
-                    ? styles.working
-                    : showStepStatus(data[index].from, data[index].to) ===
-                      "disabled"
-                    ? styles.disabled
-                    : styles.complete,
-                ]}
-              >
-                <Text
-                  style={[
-                    GlobalStyles.font12,
-                    GlobalStyles.defaultFontFamily,
-                    {
-                      color:
-                        showStepStatus(data[index].from, data[index].to) ===
-                        "working"
-                          ? Colors.white
-                          : showStepStatus(data[index].from, data[index].to) ===
-                            "disabled"
-                          ? Colors.step_disabled_fg
-                          : Colors.white,
-                    },
-                  ]}
-                >
-                  {item.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-            <TouchableOpacity
+    <View style={GlobalStyles.container}>
+      <View style={GlobalStyles.sidebar}>
+        <Sidebar2 />
+      </View>
+      <View style={GlobalStyles.mainContainer}>
+        <View style={GlobalStyles.content}>
+          <Header />
+          <View style={styles.container}>
+            <View
               style={[
-                styles.themeCard,
-                allSet ? styles.working : styles.disabled,
+                GlobalStyles.rowContainer,
+                {
+                  justifyContent: "space-between",
+                },
               ]}
             >
-              <Text
-                style={[
-                  GlobalStyles.font12,
-                  GlobalStyles.defaultFontFamily,
-                  { color: allSet ? "white" : Colors.step_disabled_fg },
-                ]}
-              >
-                Summary
-              </Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </View>
-        <View style={GlobalStyles.rowContainer}>
-          <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-            Hypertension |{" "}
-          </Text>
-          <Text style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}>
-            Step {currentStep} of {totalSteps}
-          </Text>
+              <View style={GlobalStyles.rowContainer}>
+                <ScrollView horizontal>
+                  {themes.map((item, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => handleStep(index)}
+                      style={[
+                        styles.themeCard,
+                        showStepStatus(data[index].from, data[index].to) ===
+                        "working"
+                          ? styles.working
+                          : showStepStatus(data[index].from, data[index].to) ===
+                            "disabled"
+                          ? styles.disabled
+                          : styles.complete,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          GlobalStyles.font12,
+                          GlobalStyles.defaultFontFamily,
+                          {
+                            color:
+                              showStepStatus(
+                                data[index].from,
+                                data[index].to
+                              ) === "working"
+                                ? Colors.white
+                                : showStepStatus(
+                                    data[index].from,
+                                    data[index].to
+                                  ) === "disabled"
+                                ? Colors.step_disabled_fg
+                                : Colors.white,
+                          },
+                        ]}
+                      >
+                        {item.name}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                  <TouchableOpacity
+                    style={[
+                      styles.themeCard,
+                      allSet ? styles.working : styles.disabled,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        GlobalStyles.font12,
+                        GlobalStyles.defaultFontFamily,
+                        { color: allSet ? "white" : Colors.step_disabled_fg },
+                      ]}
+                    >
+                      Summary
+                    </Text>
+                  </TouchableOpacity>
+                </ScrollView>
+              </View>
+              <View style={GlobalStyles.rowContainer}>
+                <Text
+                  style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}
+                >
+                  Hypertension |{" "}
+                </Text>
+                <Text
+                  style={[GlobalStyles.font14, GlobalStyles.defaultFontFamily]}
+                >
+                  Step {currentStep} of {totalSteps}
+                </Text>
+              </View>
+            </View>
+            <View style={[styles.noteProcessor]}>
+              {allSet ? (
+                <Summary />
+              ) : (
+                <NoteProcessor
+                  value={data[stepIndex]}
+                  answer={answer}
+                  resetStep={handleStep}
+                  stepIndex={stepIndex}
+                  editAnswer={handleEditAnswer}
+                />
+              )}
+            </View>
+          </View>
         </View>
       </View>
-      <View style={[styles.noteProcessor]}>
-        {allSet ? (
-          <Summary />
-        ) : (
-          <NoteProcessor
-            value={data[stepIndex]}
-            answer={answer}
-            resetStep={handleStep}
-            stepIndex={stepIndex}
-            editAnswer={handleEditAnswer}
-          />
-        )}
-      </View>
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flex: 1,
+    padding: 30,
   },
   themeCard: {
     height: 25,
